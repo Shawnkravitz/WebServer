@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 
 public class Node {
 
+    // TEST FOR HATTER COMMIT
     @Id private String id;
     private String name;
     private String state;
