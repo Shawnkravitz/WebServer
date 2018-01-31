@@ -1,0 +1,141 @@
+*************** Retrieving a node ***************
+Method = GET
+Path = /node/{id} (where id is a String)
+Returns = JSON representation of Node
+
+Example:
+localhost:8080/node/5a66263cdd7c50496c7c78b3
+Returns:
+{
+    "id": "5a66263cdd7c50496c7c78b3",
+    "name": "bedroom1",
+    "state": "on"
+}
+
+
+
+*************** Retrieving all nodes ***************
+Method = GET
+Path = /nodes
+Returns = JSON collection of Nodes
+
+Example: 
+localhost:8080/nodes
+Returns:
+[
+    {
+        "id": "5a66263cdd7c50496c7c78b3",
+        "name": "bedroom1",
+        "state": "on"
+    },
+    {
+        "id": "5a663c42dd7c505833f22e27",
+        "name": "garagedoor",
+        "state": "up"
+    }
+]
+
+
+*************** Creating a node ***************
+Method = POST
+Path = /node/create/{json object}
+Returns = node id (String to be used to retrieve Node)
+
+Example:
+localhost:8080/node/create/{ "name":"porchlight", "state":"off" }
+Returns:
+5a711c8a78309229fbaec3be
+
+
+
+*************** Changing the state of a node ***************
+Method = POST
+Path = /node/edit/{id}/{state} (where id and state are both Strings)
+Return = boolean true
+
+Example: 
+localhost:8080/node/edit/5a66263cdd7c50496c7c78b3/off
+Response:
+true
+
+
+
+*************** Deleting a node ***************
+Method = DELETE
+Path = /node/{id} (where id is a String)
+Returns = boolean true
+
+Example:
+localhost:8080/node/5a711c8a78309229fbaec3be
+Returns:
+true
+
+
+
+***************  Add user ***************
+Method = POST
+Path = /newuser/{json object} (JSON object is: String username, String password)
+Returns = user id (String to be used to retrieve user)
+
+Example:
+localhost:8080/newuser/{ "name":"dwight", "password":"beets" }
+Returns: 
+5a711989783092298b39c3cb
+
+
+
+*************** Delete user ***************
+Method = DELETE
+Path = /user/{id} (where id is String)
+Returns = boolean true
+
+Example:
+localhost:8080/user/5a711989783092298b39c3cb
+Returns:
+true
+
+
+
+*************** Change password ***************
+Method = POST
+Path = /user/changepw/{id}/{newpw} (where id and newpw are Strings)
+Returns = boolean true;
+
+Example:
+localhost:8080/user/changepw/5a7112ab78309228b4aaf8d6/heyyyyy
+Returns:
+true
+
+
+
+*************** Check user credentials ***************
+Method = GET
+Path = /checkuser/{id}/{pw} (where id and pw are Strings)
+Returns = boolean true if passwords match, otherwise boolean false
+
+Example:
+localhost:8080/checkuser/5a7112ab78309228b4aaf8d6/heyyyyy
+Returns:
+true
+
+
+
+*************** See all users ***************
+Method = GET
+Path = /users
+
+Example:
+localhost:8080/users
+Returns: 
+[
+    {
+        "id": "5a7112ab78309228b4aaf8d6",
+        "password": "iheartpam",
+        "name": "jim"
+    },
+    {
+        "id": "5a7115d8783092293786b6a4",
+        "password": "thatswhatshesaid",
+        "name": "michael"
+    }
+]
