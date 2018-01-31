@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-// creates a MongoDB repository for Nodes
-@RepositoryRestResource(collectionResourceRel = "nodes", path = "nodes")
-public interface NodeRepository extends MongoRepository<Node, String>{
+// creates a MongoDB repository for usernames and passwords
+@RepositoryRestResource(collectionResourceRel = "users", path = "users")
+public interface UserRepository extends MongoRepository<User, String>{
 
-    Node findByName(@Param("name") String name);
+
 }
