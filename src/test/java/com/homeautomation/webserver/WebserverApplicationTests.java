@@ -12,5 +12,9 @@ public class WebserverApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
+	@Test
+	public void testLoad() {
+
+	}
 
 }
