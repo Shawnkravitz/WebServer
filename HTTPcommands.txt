@@ -1,0 +1,44 @@
+Retrieving a node
+Method = GET
+Path = /node/{id} (where id is a String)
+Returns = JSON representation of Node
+
+Retrieving all nodes
+Method = GET
+Path = /nodes
+Returns = JSON collection of Nodes
+
+Creating a node
+Method = POST
+Path = /node/create/{json object}
+Returns = node id (String to be used to retrieve Node)
+
+Changing the state of a node
+Method = POST
+Path = /node/edit/{id}/{state} (where id and state are both Strings)
+Return = boolean true
+
+Deleting a node
+Method = DELETE
+Path = /node/{id} (where id is a String)
+Returns = boolean true
+
+Add user
+Method = POST
+Path = /newuser/{json object} (JSON object is: String username, String password)
+Returns = user id (String to be used to retrieve user)
+
+Delete user
+Method = DELETE
+Path = /user/{id} (where id is String)
+Returns = boolean true
+
+Change password
+Method = POST
+Path = /user/changepw/{id}/{newpw} (where id and newpw are Strings)
+Returns = boolean true;
+
+Check user credentials
+Method = GET
+Path = /user/{id}/{pw} (where id and pw are Strings)
+Returns = boolean true if passwords match, otherwise boolean false
