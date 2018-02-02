@@ -7,6 +7,7 @@ public class Node {
     @Id private String id;
     private String name;
     private String state;
+    private String description;
 
     public Node(){} // required for JSON object mapping
 
@@ -30,6 +31,10 @@ public class Node {
     public void setState(String state){
         this.state = state;
     }
+
+    public void setDescription(String description){ this.description = description; }
+
+    public String getDescription(){ return description; }
 
     public String getID(){
         return id;
