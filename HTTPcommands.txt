@@ -1,18 +1,39 @@
+*************** Creating a node ***************
+Method = POST
+Path = /nodes
+Body (application/json)
+{
+    "name": "name",
+    "state": "on/off",
+    "description": "description"
+}
+Returns = node id (String to be used to retrieve Node)
+
+Example:
+POST localhost:8080/nodes
+{
+    "name": "bedroom1",
+    "state": "on",
+    "description": "bedroom light switch"
+}
+Returns:
+5a66263cdd7c50496c7c78b3
+
+
 *************** Retrieving a node ***************
 Method = GET
-Path = /node/{id} (where id is a String)
+Path = /nodes/{id} (where id is a String)
 Returns = JSON representation of Node
 
 Example:
-localhost:8080/node/5a66263cdd7c50496c7c78b3
+GET localhost:8080/nodes/5a66263cdd7c50496c7c78b3
 Returns:
 {
     "id": "5a66263cdd7c50496c7c78b3",
     "name": "bedroom1",
-    "state": "on"
+    "state": "on",
+    "description": "bedroom light switch"
 }
-
-
 
 *************** Retrieving all nodes ***************
 Method = GET
@@ -20,53 +41,61 @@ Path = /nodes
 Returns = JSON collection of Nodes
 
 Example: 
-localhost:8080/nodes
+GET localhost:8080/nodes
 Returns:
 [
     {
         "id": "5a66263cdd7c50496c7c78b3",
         "name": "bedroom1",
-        "state": "on"
+        "state": "on",
+        "description": "bedroom light switch"
     },
     {
         "id": "5a663c42dd7c505833f22e27",
         "name": "garagedoor",
-        "state": "up"
+        "state": "up",
+        "description": "garage door opener"
     }
 ]
 
-
-*************** Creating a node ***************
-Method = POST
-Path = /node/create/{json object}
-Returns = node id (String to be used to retrieve Node)
-
-Example:
-localhost:8080/node/create/{ "name":"porchlight", "state":"off" }
-Returns:
-5a711c8a78309229fbaec3be
-
-
-
 *************** Changing the state of a node ***************
-Method = POST
-Path = /node/edit/{id}/{state} (where id and state are both Strings)
-Return = boolean true
+Method = PUT
+Path = /nodes/{id}(where id and state are both Strings)
+Body (application/json)
+{
+    "id": "id",
+    "name": "new_name",
+    "state": "new_state",
+    "description": "new_description"
+}
+Returns = JSON representation of updated Node
 
 Example: 
-localhost:8080/node/edit/5a66263cdd7c50496c7c78b3/off
-Response:
-true
+PUT localhost:8080/nodes/5a711c8a78309229fbaec3be
+Body (application/json) =
+{
+   "id": "5a663c42dd7c505833f22e27",
+   "name": "garagedoor",
+   "state": "down",
+   "description": "garage door opener"
+}
+Response =
+{
+    "id": "5a663c42dd7c505833f22e27",
+    "name": "garagedoor",
+    "state": "down",
+    "description": "garage door opener"
+}
 
 
 
 *************** Deleting a node ***************
 Method = DELETE
-Path = /node/{id} (where id is a String)
+Path = /nodes/{id} (where id is a String)
 Returns = boolean true
 
 Example:
-localhost:8080/node/5a711c8a78309229fbaec3be
+DELETE localhost:8080/node/5a711c8a78309229fbaec3be
 Returns:
 true
 

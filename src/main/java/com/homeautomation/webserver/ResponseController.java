@@ -19,41 +19,43 @@ public class ResponseController {
     @Autowired
     private UserRepository userRepository;
 
-    // method for retrieving node information
-    @RequestMapping(value = "/node/{id}", method = RequestMethod.GET)
-    public Node findOneNode(@PathVariable("id") String id) {
-        //System.out.println(repository.findByName(id).getName());
-        return repository.findOne(id);
-    }
-
-    // method for retrieving all nodes
-    @RequestMapping(value = "/nodes", method = RequestMethod.GET )
-    public List findAllNodes(){
-        return repository.findAll();
-    }
-
-    // method for creating nodes
-    @RequestMapping(value = "/node/create/{json}", method = RequestMethod.POST)
-    public String createNode(@PathVariable("json") String json) throws IOException {
+    // method for creating a node (create)
+    @RequestMapping(value = "/nodes", method = RequestMethod.POST)
+    public String createNodeTest(@RequestBody String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Node node = mapper.readValue(json, Node.class);
         repository.save(node);
         return node.getID();
     }
 
-    // method for deleting node
-    @RequestMapping(value = "/node/{id}", method = RequestMethod.DELETE)
-    public boolean deleteNode(@PathVariable("id") String id){
-        repository.delete(findOneNode(id));
-        return true;
+    // method for retrieving all nodes (read)
+    @RequestMapping(value = "/nodes", method = RequestMethod.GET )
+    public List findAllNodes(){
+        return repository.findAll();
     }
 
-    // method for changing the state of a node
-    @RequestMapping(value = "/node/edit/{id}/{state}", method = RequestMethod.POST)
-    public boolean editNode(@PathVariable("state") String state, @PathVariable("id") String id){
-        Node nodeToEdit = repository.findOne(id);
-        nodeToEdit.setState(state);
-        repository.save(nodeToEdit);
+    // method for retrieving specific node information (read)
+    @RequestMapping(value = "/nodes/{id}", method = RequestMethod.GET)
+    public Node findOneNode(@PathVariable("id") String id) {
+        //System.out.println(repository.findByName(id).getName());
+        return repository.findOne(id);
+    }
+
+    // method for changing the state of a node (update)
+    @RequestMapping(value = "/nodes/{id}", method = RequestMethod.PUT)
+    public Node editNode(@RequestBody String json,
+                         @PathVariable("id") String id) throws IOException{
+        ObjectMapper mapper = new ObjectMapper();
+        Node node = mapper.readValue(json, Node.class);
+        repository.save(node);
+
+        return repository.findOne(id);
+    }
+
+    // method for deleting node (delete)
+    @RequestMapping(value = "/nodes/{id}", method = RequestMethod.DELETE)
+    public boolean deleteNode(@PathVariable("id") String id){
+        repository.delete(findOneNode(id));
         return true;
     }
 
