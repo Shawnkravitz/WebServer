@@ -47,6 +47,7 @@ public class ResponseController {
                          @PathVariable("id") String id) throws IOException{
         ObjectMapper mapper = new ObjectMapper();
         Node node = mapper.readValue(json, Node.class);
+
         repository.save(node);
 
         return repository.findOne(id);
