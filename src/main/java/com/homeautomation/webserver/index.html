@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Home Automation Software</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style type="text/css">
+        .dropdown-submenu{position:relative;}
+        .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
+        .dropdown-submenu:hover>.dropdown-menu{display:block;}
+        .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#cccccc;margin-top:5px;margin-right:-10px;}
+        .dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
+        .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+    </style>
+    <style type="text/css">
+        .modal {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            z-index: 1050;
+            width: 560px;
+            height: 330px;
+            margin-left: -280px;
+            background-color: #ffffff;
+            border: 1px solid #999;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            *border: 1px solid #999;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            outline: none;
+            -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+            -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+            -webkit-background-clip: padding-box;
+            -moz-background-clip: padding-box;
+            background-clip: padding-box;
+        }
+
+
+        .modal.fade {
+            top: -25%;
+            -webkit-transition: opacity 0.3s linear, top 0.3s ease-out;
+            -moz-transition: opacity 0.3s linear, top 0.3s ease-out;
+            -o-transition: opacity 0.3s linear, top 0.3s ease-out;
+            transition: opacity 0.3s linear, top 0.3s ease-out;
+        }
+
+        .modal.fade.in {
+            top: 10%;
+        }
+
+        .modal-header {
+            padding: 9px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header .close {
+            margin-top: 2px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            line-height: 30px;
+        }
+
+        .modal-body {
+            position: relative;
+            max-height: 400px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .modal-form {
+            margin-bottom: 0;
+        }
+
+        .modal-footer {
+
+            padding: 14px 15px 15px;
+            margin-bottom: 0;
+            text-align: right;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
+            -webkit-border-radius: 0 0 6px 6px;
+            -moz-border-radius: 0 0 6px 6px;
+            border-radius: 0 0 6px 6px;
+            *zoom: 1;
+            -webkit-box-shadow: inset 0 1px 0 #ffffff;
+            -moz-box-shadow: inset 0 1px 0 #ffffff;
+            box-shadow: inset 0 1px 0 #ffffff;
+        }
+
+        .modal-footer:before,
+        .modal-footer:after {
+            display: table;
+            line-height: 0;
+            content: "";
+        }
+
+        .modal-footer:after {
+            clear: both;
+        }
+
+        .modal-footer .btn + .btn {
+            margin-bottom: 0;
+            margin-left: 5px;
+        }
+
+        .modal-footer .btn-group .btn + .btn {
+            margin-left: -1px;
+        }
+
+        .modal-footer .btn-block + .btn-block {
+            margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar navbar-inner " role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button>
+            <a class="navbar-brand" href="#">Home Automation Software</a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+            <ul id="navmenu" class="nav navbar-nav"
+                data-bind="template: { name: 'menuTmpl', foreach: navmenu }">
+            </ul>
+            <h5 align="right"><b>Administrator</b></h5>
+        </div>
+
+    </div>
+
+    <script id="menuTmpl" type="text/html">
+
+        <li data-bind="visible: rootItems(), css: { dropdown: children().length > 0 }">
+            <a href="#" data-bind="text: name, visible: children().length < 1"></a>
+
+            <a href="#" class="dropdown-toggle" data-bind="visible: children().length > 0"
+               data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <span data-bind="text: name"></span>
+                <span class="caret"></span>
+            </a>
+
+            <ul class="dropdown-menu" data-bind="template: { name: 'menuTmpl', foreach: children }"></ul>
+        </li>
+
+        <li data-bind="visible: rootItems() ? false : true, css: { 'dropdown-submenu': children().length > 0 }">
+            <a href="#" data-bind="text: name, visible: children().length < 1"></a>
+
+            <a href="#" class="dropdown-toggle" data-bind="visible: children().length > 0"
+               data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <span data-bind="text: name"></span>
+            </a>
+
+            <ul class="dropdown-menu" data-bind="template: { name: 'menuTmpl', foreach: children }"></ul>
+        </li>
+
+    </script>
+
+    <div id="main" class="container">
+
+        <table class="table table-striped">
+    <tr><td style="width: 1px;"></td><td><b>Monitors</b></td><td><b>Options</b></td></tr>
+    <!-- ko foreach: monitors -->
+    <tr>
+        <td>
+            <span data-bind="visible: state" class="label label-success">On</span>
+            <span data-bind="visible: !state()" class="label label-important">Off</span>
+        </td>
+        <td><p><b data-bind="text: title"></b></p><p data-bind="text: description"></p></td>
+        <td>
+            <button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
+            <button data-bind="click: $parent.remove" class="btn">Remove</button>
+            <span data-bind="visible: state">
+                <button data-bind="click: $parent.stateOff" class="btn">Turn Off</button>
+            </span>
+            <span data-bind="visible: !state()">
+                <button data-bind="click: $parent.stateOn" class="btn">Turn On</button>
+            </span>
+        </td>
+    </tr>
+    <!-- /ko -->
+    </table>
+    <button data-bind="click: beginAdd" class="btn">Add Monitor</button>
+    </div>
+    <div id="add" class="modal" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h3 id="addDialogLabel">Add Monitor</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputId">ID</label>
+                    <div class="controls">
+                        <input data-bind="value: id" type="text" id="inputId" placeholder="ID" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputMonitor">Monitor Title</label>
+                    <div class="controls">
+                        <input data-bind="value: title" type="text" id="inputMonitor" placeholder="Monitor title" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputDescription">Description</label>
+                    <div class="controls">
+                        <input data-bind="value: description" type="text" id="inputDescription" placeholder="Description" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputState">On</label>
+                    <div class="controls">
+                        <input data-bind="checked: state" type="checkbox" id="inputState" placeholder="State" style="width: 20px;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click: addMonitor" class="btn btn-primary">Add Monitor</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+    <div id="edit" class="modal" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h3 id="editDialogLabel">Edit Monitor</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="editId">ID</label>
+                    <div class="controls">
+                        <input data-bind="value: id" type="text" id="editId" placeholder="ID" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="editTitle">Monitor Title</label>
+                    <div class="controls">
+                        <input data-bind="value: title" type="text" id="editTitle" placeholder="Monitor title" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="editDescription">Description</label>
+                    <div class="controls">
+                        <input data-bind="value: description" type="text" id="editDescription" placeholder="Description" style="width: 300px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="editState">On</label>
+                    <div class="controls">
+                        <input data-bind="checked: state" type="checkbox" id="editState" placeholder="State" style="width: 20px;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click: editMonitor" class="btn btn-primary">Edit Monitor</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+    <div id="login" class="modal" tabindex="=1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h3 id="loginLabel">Login</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputMonitor">Username</label>
+                    <div class="controls">
+                        <input data-bind="value: username" type="text" id="inputUsername" placeholder="Username" style="width: 200px;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputPassword">Password</label>
+                    <div class="controls">
+                        <input data-bind="value: password" type="text" id="inputPassword" placeholder="Password" style="width: 200px;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+
+            <button data-bind="click: submitLogin" class="btn btn-primary">Login</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function MonitorsViewModel() {
+            var self = this;
+            /*
+            var uri = "http://localhost:8080/monitors";
+            self.ajax = function(uri, method, data) {
+                var request = {
+                    url: uri,
+                    type: method,
+                    contentType: "application/json",
+                    accepts: "application/json",
+                    cache: false,
+                    dataType: 'json',
+                    data: JSON.stringify(data),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Content-Type","application/json");
+                    },
+                    error: function(jqXHR) {
+                        console.log("ajax error " + jqXHR.status);
+                    }
+                };
+                return $.ajax(request);
+            }
+            */
+
+            self.monitors = ko.observableArray();
+            /*
+            self.monitors([
+                {
+                    id: ko.observable('1'),
+                    title: ko.observable('Light 1'),
+                    description: ko.observable('Living Room'),
+                    state: ko.observable(true)
+                },
+                {
+                    id: ko.observable('2'),
+                    title: ko.observable('Light 2'),
+                    description: ko.observable('Hallway'),
+                    state: ko.observable(false)
+                },
+                {
+                    id: ko.observable('3'),
+                    title: ko.observable('Outlet 1'),
+                    description: ko.observable('Living Room'),
+                    state: ko.observable(true)
+                },
+                {
+                    id: ko.observable('4'),
+                    title: ko.observable('Outlet 2'),
+                    description: ko.observable('Hallway'),
+                    state: ko.observable(true)
+                },
+                {
+                    id: ko.observable('5'),
+                    title: ko.observable('Heater'),
+                    description: ko.observable('Central'),
+                    state: ko.observable(false)
+                }
+            ]);
+            */
+            //$.get('http://localhost:3000/monitors', function(data) {
+            $.get('http://localhost:8080/nodes', function(data) {
+                var myData = data;
+                for (var i = 0; i < myData.length; i++) {
+                    self.monitors.push({
+                        id: ko.observable(myData[i].id),
+                        title: ko.observable(myData[i].title),
+                        description: ko.observable(myData[i].description),
+                        state: ko.observable(myData[i].state)
+                    });
+                }
+            });
+
+            self.add = function(monitor){
+                self.monitors.push({
+                    id: ko.observable(monitor.id),
+                    title: ko.observable(monitor.title),
+                    description: ko.observable(monitor.description),
+                    state: ko.observable(monitor.state)
+                });
+                var myData = {
+                    'title': monitor.title,
+                    'description': monitor.description,
+                    'state': monitor.state
+                };
+                //$.post("http://localhost:3000/monitors", myData,function(data, status){
+                $.post("http://localhost:8080/nodes", myData,function(data, status){
+                    alert("Data: " + data + "\nStatus: " + status);
+                });
+            }
+            self.beginAdd = function() {
+                $('#add').modal('show');
+            }
+            self.beginEdit = function(monitor) {
+                editMonitorViewModel.setMonitor(monitor);
+                $('#edit').modal('show');
+            }
+            self.edit = function(monitor, newmonitor) {
+                self.updateMonitor(monitor, newmonitor);
+            }
+
+            self.updateMonitor = function(monitor, newmonitor) {
+                var i = self.monitors.indexOf(monitor);
+                var myData = {
+                    'title': newmonitor.title,
+                    'description': newmonitor.description,
+                    'state': newmonitor.state
+                };
+                $.ajax({
+                    //url: 'http://localhost:3000/monitors/' + i,
+                    url: 'http://localhost:8080/nodes/' + i,
+                    method: 'PUT',
+                    data: JSON.stringify(myData),
+                    contentType: 'application/json',
+                    success: function(result) {
+                        self.monitors()[i].id(newmonitor.id);
+                        self.monitors()[i].title(newmonitor.title);
+                        self.monitors()[i].description(newmonitor.description);
+                        self.monitors()[i].state(newmonitor.state);
+                    },
+                    error: function(request,msg,error) {
+                        alert(msg);
+                    }
+                });
+            }
+            self.remove = function(monitor) {
+                var i = self.monitors.indexOf(monitor);
+                $.ajax({
+                    //url: 'http://localhost:3000/monitors/' + i,
+                    url: 'http://localhost:8080/nodes/' + i,
+                    method: 'DELETE',
+                    contentType: 'application/json',
+                    success: function(result) {
+                        self.monitors.remove(monitor);
+                    },
+                    error: function(request,msg,error) {
+                        alert(msg);
+                    }
+                });
+
+            }
+            self.stateOff = function(monitor) {
+                var i = self.monitors.indexOf(monitor);
+                var myData = {
+                    'title': self.monitors()[i].title(),
+                    'description': self.monitors()[i].description(),
+                    'state': false
+                };
+                $.ajax({
+                    //url: 'http://localhost:3000/monitors/' + i,
+                    url: 'http://localhost:8080/nodes/' + i,
+                    method: 'PUT',
+                    data: JSON.stringify(myData),
+                    contentType: 'application/json',
+                    success: function(result) {
+                        self.monitors()[i].state(false);
+                    },
+                    error: function(request,msg,error) {
+                        alert(msg);
+                    }
+                });
+            }
+            self.stateOn = function(monitor) {
+                var i = self.monitors.indexOf(monitor);
+                var myData = {
+                    'title': self.monitors()[i].title(),
+                    'description': self.monitors()[i].description(),
+                    'state': true
+                };
+                $.ajax({
+                    //url: 'http://localhost:3000/monitors/' + i,
+                    url: 'http://localhost:8080/nodes/' + i,
+                    method: 'PUT',
+                    data: JSON.stringify(myData),
+                    contentType: 'application/json',
+                    success: function(result) {
+                        self.monitors()[i].state(true);
+                    },
+                    error: function(request,msg,error) {
+                        alert(msg);
+                    }
+                });
+            }
+
+            self.beginLogin = function() {
+                $('#login').modal('show');
+            }
+            self.login = function(username, password) {
+                if(username == "nick" && password == "test") {
+                    alert("Login Success");
+                } else {
+                    alert("Login Fail");
+                }
+            }
+
+            self.beginLogin();
+        }
+
+        function AddMonitorViewModel() {
+            var self = this;
+            self.id = ko.observable();
+            self.title = ko.observable();
+            self.description = ko.observable();
+            self.state = ko.observable();
+
+            self.addMonitor = function() {
+                $('#add').modal('hide');
+                monitorsViewModel.add({
+                    id: self.id(),
+                    title: self.title(),
+                    description: self.description(),
+                    state: self.state()
+                });
+                self.id("");
+                self.title("");
+                self.description("");
+                self.state(false);
+            }
+        }
+
+        function EditMonitorViewModel() {
+            var self = this;
+            self.id = ko.observable();
+            self.title = ko.observable();
+            self.description = ko.observable();
+            self.state = ko.observable();
+
+            self.editMonitor = function() {
+                $('#edit').modal('hide');
+                monitorsViewModel.edit(self.monitor, {
+                    id: self.id(),
+                    title: self.title(),
+                    description: self.description() ,
+                    state: self.state()
+                });
+            }
+
+            self.setMonitor = function(monitor) {
+                self.monitor = monitor;
+                self.id(monitor.id());
+                self.title(monitor.title());
+                self.description(monitor.description());
+                self.state(monitor.state());
+
+            }
+
+        }
+
+        function LoginViewModel() {
+            var self = this;
+            self.username = ko.observable();
+            self.password = ko.observable();
+
+            self.submitLogin = function() {
+                $('#login').modal('hide');
+                monitorsViewModel.login(self.username(), self.password());
+            }
+        }
+
+        var monitorsViewModel = new MonitorsViewModel();
+        var addMonitorsViewModel = new AddMonitorViewModel();
+        var editMonitorViewModel = new EditMonitorViewModel();
+        var loginViewModel = new LoginViewModel();
+        ko.applyBindings(monitorsViewModel, $('#main')[0]);
+        ko.applyBindings(addMonitorsViewModel, $('#add')[0]);
+        ko.applyBindings(editMonitorViewModel, $('#edit')[0]);
+        ko.applyBindings(loginViewModel, $('#login')[0]);
+
+
+
+    </script>
+
+    <script type="text/javascript">
+        var MenuItem = function (name, children, rootItems) {
+            this.name = ko.observable(name);
+            this.children = ko.observableArray(children || []);
+            this.rootItems = ko.observable(rootItems || false);
+        };
+
+        var MenuModel = function () {
+            this.navmenu = ko.observableArray([
+                new MenuItem("Menu", [
+                    new MenuItem("Monitors", [
+                        new MenuItem("Overview"),
+                        new MenuItem("Manage")]),
+                    new MenuItem("Settings")
+                    ], true),
+                    new MenuItem("Help", [
+                        new MenuItem("About"),
+                        new MenuItem("User Guide")
+                    ], true),
+                new MenuItem("User", [
+                    new MenuItem("Profile"),
+                    new MenuItem("Log Out")
+                ], true)
+            ]);
+
+            this.addChild = function (name, parentArray) {
+                parentArray.push(new MenuItem(name));
+            };
+        };
+
+        $(function () {
+            ko.applyBindings(new MenuModel());
+        });
+    </script>
+
+</body>
+</html>
