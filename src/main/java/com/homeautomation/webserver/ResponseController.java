@@ -25,12 +25,14 @@ public class ResponseController {
         ObjectMapper mapper = new ObjectMapper();
         Node node = mapper.readValue(json, Node.class);
         repository.save(node);
+        System.out.println("POST ID:" + node.getID() + " Name: " + node.getName() + " Description: " + node.getDescription() + " State: " + node.getState());
         return node.getID();
     }
 
     // method for retrieving all nodes (read)
     @RequestMapping(value = "/nodes", method = RequestMethod.GET )
     public List findAllNodes(){
+        System.out.println("GET");
         return repository.findAll();
     }
 
