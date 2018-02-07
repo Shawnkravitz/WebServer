@@ -1,0 +1,8 @@
+[Unit]
+Description=Web service back-end
+[Service]
+ExecStart=/usr/bin/java -jar /home/ubuntu/webserver-0.0.1-SNAPSHOT.jar
+Type=simple
+User=root
+[Install]
+WantedBy=multi-user.target

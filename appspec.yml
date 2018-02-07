@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+files:
+  - source: ./webserver-0.0.1-SNAPSHOT.jar
+    destination: /home/ubuntu
+  - source: ./webserver.service
+    destination: /etc/systemd/system
+hooks:
+  ApplicationStart:
+    - location: start_server.sh
+      timeout: 30
+      runas: root
+  ApplicationStop:
+    - location: stop_server.sh
+      timeout: 30
+runas: root
