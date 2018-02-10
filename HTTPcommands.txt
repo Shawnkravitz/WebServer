@@ -4,7 +4,7 @@ Path = /nodes
 Body (application/json)
 {
     "name": "name",
-    "state": "on/off",
+    "state": "true/false",
     "description": "description"
 }
 Returns = node id (String to be used to retrieve Node)
@@ -13,7 +13,7 @@ Example:
 POST localhost:8080/nodes
 {
     "name": "bedroom1",
-    "state": "on",
+    "state": "true",
     "description": "bedroom light switch"
 }
 Returns:
@@ -31,7 +31,7 @@ Returns:
 {
     "id": "5a66263cdd7c50496c7c78b3",
     "name": "bedroom1",
-    "state": "on",
+    "state": "true",
     "description": "bedroom light switch"
 }
 
@@ -47,13 +47,13 @@ Returns:
     {
         "id": "5a66263cdd7c50496c7c78b3",
         "name": "bedroom1",
-        "state": "on",
+        "state": "true",
         "description": "bedroom light switch"
     },
     {
         "id": "5a663c42dd7c505833f22e27",
         "name": "garagedoor",
-        "state": "up",
+        "state": "false",
         "description": "garage door opener"
     }
 ]
@@ -63,10 +63,7 @@ Method = PUT
 Path = /nodes/{id}(where id and state are both Strings)
 Body (application/json)
 {
-    "id": "id",
-    "name": "new_name",
-    "state": "new_state",
-    "description": "new_description"
+    "state": "true",
 }
 Returns = JSON representation of updated Node
 
@@ -74,16 +71,13 @@ Example:
 PUT localhost:8080/nodes/5a711c8a78309229fbaec3be
 Body (application/json) =
 {
-   "id": "5a663c42dd7c505833f22e27",
-   "name": "garagedoor",
-   "state": "down",
-   "description": "garage door opener"
+   "state": "false",
 }
 Response =
 {
     "id": "5a663c42dd7c505833f22e27",
     "name": "garagedoor",
-    "state": "down",
+    "state": "false",
     "description": "garage door opener"
 }
 
@@ -103,7 +97,7 @@ true
 
 ***************  Add user ***************
 Method = POST
-Path = /newuser/{json object} (JSON object is: String username, String password)
+Path = /users/{json object} (JSON object is: String username, String password)
 Returns = user id (String to be used to retrieve user)
 
 Example:
@@ -115,7 +109,7 @@ Returns:
 
 *************** Delete user ***************
 Method = DELETE
-Path = /user/{id} (where id is String)
+Path = /users/{id} (where id is String)
 Returns = boolean true
 
 Example:
@@ -126,24 +120,39 @@ true
 
 
 *************** Change password ***************
-Method = POST
-Path = /user/changepw/{id}/{newpw} (where id and newpw are Strings)
+Method = PUT
+Path = /users/{id} (where id is String)
 Returns = boolean true;
+Body (application/json)
+{
+    "password": "truman",
+}
 
 Example:
-localhost:8080/user/changepw/5a7112ab78309228b4aaf8d6/heyyyyy
+localhost:8080/users/5a7112ab78309228b4aaf8d6
+{
+    "password": "truman",
+}
 Returns:
 true
 
 
 
 *************** Check user credentials ***************
-Method = GET
-Path = /checkuser/{id}/{pw} (where id and pw are Strings)
+Method = POST
+Path = /users/{id}/ (where id is String)
+Body (application/json)
+{
+    "password": "truman",
+}
 Returns = boolean true if passwords match, otherwise boolean false
 
 Example:
-localhost:8080/checkuser/5a7112ab78309228b4aaf8d6/heyyyyy
+localhost:8080/users/5a7112ab78309228b4aaf8d6/
+Body (application/json)
+{
+    "password": "truman",
+}
 Returns:
 true
 

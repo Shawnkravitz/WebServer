@@ -1,10 +1,12 @@
 package com.homeautomation.webserver;
 
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -29,6 +31,12 @@ public class ResponseController {
         return node.getID();
     }
 
+    // hello world method
+    @RequestMapping(value= "/", method = RequestMethod.GET)
+    public String returnHelloWorld(){
+        return "Hello World!";
+    }
+
     // method for retrieving all nodes (read)
     @RequestMapping(value = "/nodes", method = RequestMethod.GET )
     public List findAllNodes(){
@@ -39,19 +47,27 @@ public class ResponseController {
     // method for retrieving specific node information (read)
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.GET)
     public Node findOneNode(@PathVariable("id") String id) {
-        //System.out.println(repository.findByName(id).getName());
         return repository.findOne(id);
     }
 
     // method for changing the state of a node (update)
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.PUT)
     public Node editNode(@RequestBody String json,
-                         @PathVariable("id") String id) throws IOException{
-        ObjectMapper mapper = new ObjectMapper();
-        Node node = mapper.readValue(json, Node.class);
+                         @PathVariable("id") String id) throws IOException {
 
-        repository.save(node);
+        String state = "";
+        JsonFactory factory = new JsonFactory();
+        JsonParser parser = factory.createParser(json);
+        while(!parser.isClosed()){
+            JsonToken jsonToken = parser.nextToken();
+            if (JsonToken.VALUE_STRING.equals(jsonToken)){
+                state = parser.getValueAsString();
+            }
+        }
 
+        Node nodeToUpdate = repository.findOne(id);
+        nodeToUpdate.setState(state);
+        repository.save(nodeToUpdate);
         return repository.findOne(id);
     }
 
@@ -63,8 +79,8 @@ public class ResponseController {
     }
 
     // code for adding user
-    @RequestMapping(value = "/newuser/{json}", method= RequestMethod.POST)
-    public String createUser(@PathVariable("json") String json) throws IOException {
+    @RequestMapping(value = "/users", method= RequestMethod.POST)
+    public String createUser(@RequestBody String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         User user = mapper.readValue(json, User.class);
         userRepository.save(user);
@@ -72,26 +88,49 @@ public class ResponseController {
     }
 
     // code for deleting user
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
     public boolean deleteUser(@PathVariable("id") String id){
         userRepository.delete(id);
         return true;
     }
 
     // code for changing password
-    @RequestMapping(value = "/user/changepw/{id}/{newpw}", method = RequestMethod.POST)
-    public boolean changePassword(@PathVariable("id") String id, @PathVariable("newpw") String newpw) {
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
+    public boolean changePassword(@RequestBody String json,
+                                  @PathVariable("id") String id) throws IOException {
+
+        String password = "";
+        JsonFactory factory = new JsonFactory();
+        JsonParser parser = factory.createParser(json);
+        while(!parser.isClosed()){
+            JsonToken jsonToken = parser.nextToken();
+            if (JsonToken.VALUE_STRING.equals(jsonToken)){
+                password = parser.getValueAsString();
+            }
+        }
+
         User userToUpdate = userRepository.findOne(id);
-        userToUpdate.setPassword(newpw);
+        userToUpdate.setPassword(password);
         userRepository.save(userToUpdate);
         return true;
     }
 
 
     // code for checking credentials
-    @RequestMapping(value = "/checkuser/{id}/{pw}", method = RequestMethod.GET)
-    public boolean checkPassword(@PathVariable("id") String id, @PathVariable("pw") String pw){
-        if (userRepository.findOne(id).getPassword().equals(pw)){
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.POST)
+    public boolean checkPassword(@RequestBody String json,
+                                 @PathVariable("id") String id) throws IOException {
+
+        String password = "";
+        JsonFactory factory = new JsonFactory();
+        JsonParser parser = factory.createParser(json);
+        while(!parser.isClosed()){
+            JsonToken jsonToken = parser.nextToken();
+            if (JsonToken.VALUE_STRING.equals(jsonToken)){
+                password = parser.getValueAsString();
+            }
+        }
+        if (userRepository.findOne(id).getPassword().equals(password)){
             return true;
         }
         else{
@@ -104,5 +143,6 @@ public class ResponseController {
     public List findAllUsers(){
         return userRepository.findAll();
     }
+
 
 }
