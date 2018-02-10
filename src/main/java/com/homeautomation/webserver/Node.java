@@ -1,7 +1,9 @@
 package com.homeautomation.webserver;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "nodes")
 public class Node {
 
     @Id private String id;

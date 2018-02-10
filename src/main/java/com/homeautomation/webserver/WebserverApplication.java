@@ -1,13 +1,16 @@
 package com.homeautomation.webserver;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-public class WebserverApplication {
+@Component
+public class WebserverApplication implements CommandLineRunner {
 
 	@Autowired
 	private NodeRepository repository;
@@ -22,16 +25,20 @@ public class WebserverApplication {
 
 	public void run(String... args) throws Exception {
 
-		repository.deleteAll();
-		// save a couple of customers
-		repository.save(new Node("bedroom1", "on"));
-		repository.save(new Node("bedroom2", "off"));
-		repository.save(new Node("garagedoor", "closed"));
 
-		userRepository.deleteAll();
+		// delete all users and nodes
+		this.repository.deleteAll();
+		this.userRepository.deleteAll();
+
+		// save a couple of customers
+		this.repository.save(new Node("bedroom1", "on"));
+		this.repository.save(new Node("bedroom2", "off"));
+		this.repository.save(new Node("garagedoor", "closed"));
+
+
 		// save a few example usernames and passwords
-		userRepository.save(new User("JimHalpert", "iheartpam"));
-		userRepository.save(new User("MichaelScott", "thatswhatshesaid"));
-		userRepository.save(new User("DwightSchrute", "beets"));
+		this.userRepository.save(new User("JimHalpert", "iheartpam"));
+		this.userRepository.save(new User("MichaelScott", "thatswhatshesaid"));
+		this.userRepository.save(new User("DwightSchrute", "beets"));
 	}
 }
