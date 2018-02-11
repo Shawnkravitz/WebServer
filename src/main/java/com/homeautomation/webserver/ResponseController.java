@@ -21,10 +21,12 @@ public class ResponseController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ObjectMapper mapper = new ObjectMapper();
+
     // method for creating a node (create)
     @RequestMapping(value = "/nodes", method = RequestMethod.POST)
     public String createNodeTest(@RequestBody String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         Node node = mapper.readValue(json, Node.class);
         repository.save(node);
         System.out.println("POST ID:" + node.getID() + " Name: " + node.getName() + " Description: " + node.getDescription() + " State: " + node.getState());
@@ -81,7 +83,6 @@ public class ResponseController {
     // code for adding user
     @RequestMapping(value = "/users", method= RequestMethod.POST)
     public String createUser(@RequestBody String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         User user = mapper.readValue(json, User.class);
         userRepository.save(user);
         return user.getId();
