@@ -14,13 +14,14 @@ public class Node {
 
     public Node(){} // required for JSON object mapping
 
-    @JsonCreator
-    public Node(@JsonProperty("name") String name,
-                @JsonProperty("state") String state){
+
+    public Node(String name, String state, String description){
         Assert.notNull(name, "Make must not be null");
         Assert.notNull(state, "Model must not be null");
+        Assert.notNull(description, "Model must not be null");
         this.name = name;
         this.state = state;
+        this.description = description;
     }
 
     public String getName(){
