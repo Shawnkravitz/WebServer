@@ -357,16 +357,18 @@
         ]);
         */
         //$.get('http://localhost:3000/monitors', function(data) {
-        $.get('http://localhost:8080/nodes', function(data) {
-            var myData = data;
-            for (var i = 0; i < myData.length; i++) {
+        $.get("http://localhost:8080/nodes", function(data) {
+
+            $.each(data, function(i, node) {
+
                 self.monitors.push({
-                    id: ko.observable(myData[i].id),
-                    title: ko.observable(myData[i].title),
-                    description: ko.observable(myData[i].description),
-                    state: ko.observable(myData[i].state)
+                    id: ko.observable(node.id),
+                    title: ko.observable(node.name),
+                    state: ko.observable(node.state),
+                    description: ko.observable(node.description)
                 });
-            }
+            });
+
         });
 
         self.add = function(monitor){
