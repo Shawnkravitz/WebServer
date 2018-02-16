@@ -6,11 +6,15 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-@RestController
+@Controller
 public class ResponseController {
 
     // import node repository
@@ -23,36 +27,37 @@ public class ResponseController {
 
     // method for creating a node (create)
     @RequestMapping(value = "/nodes", method = RequestMethod.POST)
-    public String createNodeTest(@RequestBody String json) throws IOException {
+    @ResponseBody
+    public ResponseEntity<String> createNodeTest(@RequestBody String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Node node = mapper.readValue(json, Node.class);
         repository.save(node);
         System.out.println("POST ID:" + node.getID() + " Name: " + node.getName() + " Description: " + node.getDescription() + " State: " + node.getState());
-        return node.getID();
+        return new ResponseEntity<String>(node.getID(), HttpStatus.OK);
     }
 
-    // hello world method
-    @RequestMapping(value= "/", method = RequestMethod.GET)
-    public String returnHelloWorld(){
-        return "Hello World!";
-    }
 
     // method for retrieving all nodes (read)
     @RequestMapping(value = "/nodes", method = RequestMethod.GET )
-    public List findAllNodes(){
+    @ResponseBody
+    public ResponseEntity<List<Node>> findAllNodes(){
         System.out.println("GET");
-        return repository.findAll();
+        return new ResponseEntity<List<Node>>(repository.findAll(), HttpStatus.OK);
     }
 
     // method for retrieving specific node information (read)
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.GET)
-    public Node findOneNode(@PathVariable("id") String id) {
-        return repository.findOne(id);
+    @ResponseBody
+    public ResponseEntity<Node> findOneNode(@PathVariable("id") String id) {
+        System.out.println(id);
+        return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
+        //return repository.findOne(id);
     }
 
     // method for changing the state of a node (update)
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.PUT)
-    public Node editNode(@RequestBody String json,
+    @ResponseBody
+    public ResponseEntity<Node> editNode(@RequestBody String json,
                          @PathVariable("id") String id) throws IOException {
 
         String state = "";
@@ -68,35 +73,46 @@ public class ResponseController {
         Node nodeToUpdate = repository.findOne(id);
         nodeToUpdate.setState(state);
         repository.save(nodeToUpdate);
-        return repository.findOne(id);
+        return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
     }
 
     // method for deleting node (delete)
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.DELETE)
-    public boolean deleteNode(@PathVariable("id") String id){
-        repository.delete(findOneNode(id));
-        return true;
+    @ResponseBody
+    public ResponseEntity<Boolean> deleteNode(@PathVariable("id") String id){
+        repository.delete(id);
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+    }
+
+    @RequestMapping(value="/view", produces = {
+            MediaType.TEXT_HTML_VALUE},
+            method = RequestMethod.GET)
+    public String viewContacts () {
+        return "node-listing";
     }
 
     // code for adding user
     @RequestMapping(value = "/users", method= RequestMethod.POST)
-    public String createUser(@RequestBody String json) throws IOException {
+    @ResponseBody
+    public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         User user = mapper.readValue(json, User.class);
         userRepository.save(user);
-        return user.getId();
+        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
     }
 
     // code for deleting user
     @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
-    public boolean deleteUser(@PathVariable("id") String id){
+    @ResponseBody
+    public ResponseEntity<Boolean> deleteUser(@PathVariable("id") String id){
         userRepository.delete(id);
-        return true;
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
 
     // code for changing password
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-    public boolean changePassword(@RequestBody String json,
+    @ResponseBody
+    public ResponseEntity<Boolean> changePassword(@RequestBody String json,
                                   @PathVariable("id") String id) throws IOException {
 
         String password = "";
@@ -112,13 +128,13 @@ public class ResponseController {
         User userToUpdate = userRepository.findOne(id);
         userToUpdate.setPassword(password);
         userRepository.save(userToUpdate);
-        return true;
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
 
 
     // code for checking credentials
     @RequestMapping(value = "/users/{id}", method = RequestMethod.POST)
-    public boolean checkPassword(@RequestBody String json,
+    public ResponseEntity<Boolean> checkPassword(@RequestBody String json,
                                  @PathVariable("id") String id) throws IOException {
 
         String password = "";
@@ -131,17 +147,18 @@ public class ResponseController {
             }
         }
         if (userRepository.findOne(id).getPassword().equals(password)){
-            return true;
+            return new ResponseEntity<Boolean>(true, HttpStatus.OK);
         }
         else{
-            return false;
+            return new ResponseEntity<Boolean>(false, HttpStatus.OK);
         }
     }
 
     // returns all users
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public List findAllUsers(){
-        return userRepository.findAll();
+    @ResponseBody
+    public ResponseEntity<List<User>> findAllUsers(){
+        return new ResponseEntity<List<User>>(userRepository.findAll(), HttpStatus.OK);
     }
 
 

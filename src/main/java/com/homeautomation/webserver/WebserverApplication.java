@@ -31,9 +31,9 @@ public class WebserverApplication implements CommandLineRunner {
 		this.userRepository.deleteAll();
 
 		// save a couple of customers
-		this.repository.save(new Node("bedroom1", "on"));
-		this.repository.save(new Node("bedroom2", "off"));
-		this.repository.save(new Node("garagedoor", "closed"));
+		this.repository.save(new Node("bedroom1", "true", "bedroom light"));
+		this.repository.save(new Node("bedroom2", "false", "second bedroom"));
+		this.repository.save(new Node("garagedoor", "true", "garage door"));
 
 
 		// save a few example usernames and passwords

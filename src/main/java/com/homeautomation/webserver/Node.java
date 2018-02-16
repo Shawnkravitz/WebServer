@@ -13,9 +13,10 @@ public class Node {
 
     public Node(){} // required for JSON object mapping
 
-    public Node(String name, String state){
+    public Node(String name, String state, String description){
         this.name = name;
         this.state = state;
+        this.description = description;
     }
 
     public String getName(){
