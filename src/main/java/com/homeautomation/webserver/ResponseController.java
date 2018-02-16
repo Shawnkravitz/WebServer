@@ -71,8 +71,10 @@ public class ResponseController {
         }
 
         Node nodeToUpdate = repository.findOne(id);
+        System.out.println("PUT State: " + state);
         nodeToUpdate.setState(state);
         repository.save(nodeToUpdate);
+        System.out.println("PUT ID:" + nodeToUpdate.getID() + " Name: " + nodeToUpdate.getName() + " Description: " + nodeToUpdate.getDescription() + " State: " + nodeToUpdate.getState());
         return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
     }
 
@@ -80,6 +82,7 @@ public class ResponseController {
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Boolean> deleteNode(@PathVariable("id") String id){
+        System.out.println("DELETE ID: " + id);
         repository.delete(id);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }

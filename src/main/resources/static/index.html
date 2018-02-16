@@ -312,10 +312,12 @@
 
         self.add = function(monitor){
             var myData = {
+                //'id': '',
                 'name': monitor.name,
                 'description': monitor.description,
                 'state': monitor.state
             };
+
             $.ajax({
                 //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/',
@@ -324,17 +326,29 @@
                 contentType: 'application/json',
                 success: function(result) {
                     self.monitors.push({
-                        id : data,
-                        name: monitor.name,
-                        description: monitor.description,
-                        state: monitor.state
+                        id : ko.observable(result),
+                        name: ko.observable(monitor.name),
+                        description: ko.observable(monitor.description),
+                        state: ko.observable(monitor.state)
                     });
                 },
                 error: function(request,msg,error) {
                     alert(msg);
                 }
             });
-
+            /*
+            $.post("http://localhost:8080/nodes/", {data: JSON.stringify(myData)}, function(data, status) {
+                self.monitors.push({
+                    //id : ko.observable(data),
+                    name: ko.observable(monitor.name),
+                    description: ko.observable(monitor.description),
+                    state: ko.observable(monitor.state)
+                });
+                myData.id=data;
+            }).fail(function(err, status) {
+                alert(err);
+            });*/
+            //alert(myData.id);
         }
 
 
@@ -352,20 +366,21 @@
         }
 
         self.updateMonitor = function(monitor, newmonitor) {
-            var i = self.monitors.indexOf(monitor);
+            //var i = self.monitors.indexOf(monitor);
             var myData = {
+                'id':monitor.id(),
                 'name': newmonitor.name,
                 'description': newmonitor.description,
                 'state': newmonitor.state
             };
             $.ajax({
                 //url: 'http://localhost:3000/monitors/' + i,
-                url: 'http://localhost:8080/nodes/' + i,
+                url: 'http://localhost:8080/nodes/' + monitor.id(),
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 success: function(result) {
-                    self.monitors()[i].id(newmonitor.id);
+                    self.monitors()[i].id(monitor.id);
                     self.monitors()[i].name(newmonitor.name);
                     self.monitors()[i].description(newmonitor.description);
                     self.monitors()[i].state(newmonitor.state);
@@ -376,7 +391,9 @@
             });
         }
         self.remove = function(monitor) {
-            var i = self.monitors.indexOf(monitor);
+            //var i = self.monitors.indexOf(monitor);
+            var i = monitor.id();
+            alert(i);
             $.ajax({
                 //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/' + i,
@@ -392,10 +409,11 @@
 
         }
         self.stateOff = function(monitor) {
-            var idToSend = monitor['id'];
+            var i = self.monitors.indexOf(monitor);
+            var idToSend = monitor.id();
             console.log(idToSend);
             var myData = {
-                'state': false
+                'state': 'false'
             };
             $.ajax({
                 url: 'http://localhost:8080/nodes/' + idToSend,
@@ -412,14 +430,15 @@
         }
         self.stateOn = function(monitor) {
             var i = self.monitors.indexOf(monitor);
+            var idToSend = monitor.id();
+            console.log(idToSend);
             var myData = {
-                'name': self.monitors()[i].name(),
-                'description': self.monitors()[i].description(),
-                'state': true
+                'state': 'true'
             };
+
             $.ajax({
                 //url: 'http://localhost:3000/monitors/' + i,
-                url: 'http://localhost:8080/nodes/' + i,
+                url: 'http://localhost:8080/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
