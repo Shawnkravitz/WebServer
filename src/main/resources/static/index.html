@@ -175,7 +175,7 @@
                 <span data-bind="visible: state" class="label label-success">On</span>
                 <span data-bind="visible: !state()" class="label label-important">Off</span>
             </td>
-            <td><p><b data-bind="text: title"></b></p><p data-bind="text: description"></p></td>
+            <td><p><b data-bind="text: name"></b></p><p data-bind="text: description"></p></td>
             <td>
                 <button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
                 <button data-bind="click: $parent.remove" class="btn">Remove</button>
@@ -199,15 +199,9 @@
     <div class="modal-body">
         <form class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="inputId">ID</label>
+                <label class="control-label" for="inputMonitor">Monitor Name</label>
                 <div class="controls">
-                    <input data-bind="value: id" type="text" id="inputId" placeholder="ID" style="width: 300px;">
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="inputMonitor">Monitor Title</label>
-                <div class="controls">
-                    <input data-bind="value: title" type="text" id="inputMonitor" placeholder="Monitor title" style="width: 300px;">
+                    <input data-bind="value: name" type="text" id="inputMonitor" placeholder="Monitor name" style="width: 300px;">
                 </div>
             </div>
             <div class="control-group">
@@ -243,9 +237,9 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="editTitle">Monitor Title</label>
+                <label class="control-label" for="editName">Monitor Name</label>
                 <div class="controls">
-                    <input data-bind="value: title" type="text" id="editTitle" placeholder="Monitor title" style="width: 300px;">
+                    <input data-bind="value: name" type="text" id="editName" placeholder="Monitor name" style="width: 300px;">
                 </div>
             </div>
             <div class="control-group">
@@ -295,75 +289,18 @@
 
     </div>
 </div>
-<script type="text/javascript">
+<script>
 
     function MonitorsViewModel() {
         var self = this;
-        /*
-        var uri = "http://localhost:8080/monitors";
-        self.ajax = function(uri, method, data) {
-            var request = {
-                url: uri,
-                type: method,
-                contentType: "application/json",
-                accepts: "application/json",
-                cache: false,
-                dataType: 'json',
-                data: JSON.stringify(data),
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Content-Type","application/json");
-                },
-                error: function(jqXHR) {
-                    console.log("ajax error " + jqXHR.status);
-                }
-            };
-            return $.ajax(request);
-        }
-        */
 
         self.monitors = ko.observableArray();
-        /*
-        self.monitors([
-            {
-                id: ko.observable('1'),
-                title: ko.observable('Light 1'),
-                description: ko.observable('Living Room'),
-                state: ko.observable(true)
-            },
-            {
-                id: ko.observable('2'),
-                title: ko.observable('Light 2'),
-                description: ko.observable('Hallway'),
-                state: ko.observable(false)
-            },
-            {
-                id: ko.observable('3'),
-                title: ko.observable('Outlet 1'),
-                description: ko.observable('Living Room'),
-                state: ko.observable(true)
-            },
-            {
-                id: ko.observable('4'),
-                title: ko.observable('Outlet 2'),
-                description: ko.observable('Hallway'),
-                state: ko.observable(true)
-            },
-            {
-                id: ko.observable('5'),
-                title: ko.observable('Heater'),
-                description: ko.observable('Central'),
-                state: ko.observable(false)
-            }
-        ]);
-        */
-        //$.get('http://localhost:3000/monitors', function(data) {
+
         $.get("http://localhost:8080/nodes", function(data) {
-
             $.each(data, function(i, node) {
-
                 self.monitors.push({
                     id: ko.observable(node.id),
-                    title: ko.observable(node.name),
+                    name: ko.observable(node.name),
                     state: ko.observable(node.state),
                     description: ko.observable(node.description)
                 });
@@ -371,30 +308,45 @@
 
         });
 
+
+
         self.add = function(monitor){
-            self.monitors.push({
-                id: ko.observable(monitor.id),
-                title: ko.observable(monitor.title),
-                description: ko.observable(monitor.description),
-                state: ko.observable(monitor.state)
-            });
             var myData = {
-                'title': monitor.title,
+                'name': monitor.name,
                 'description': monitor.description,
                 'state': monitor.state
             };
-            //$.post("http://localhost:3000/monitors", myData,function(data, status){
-            $.post("http://localhost:8080/nodes", myData,function(data, status){
-                alert("Data: " + data + "\nStatus: " + status);
+            $.ajax({
+                //url: 'http://localhost:3000/monitors/' + i,
+                url: 'http://localhost:8080/nodes/',
+                method: 'POST',
+                data: JSON.stringify(myData),
+                contentType: 'application/json',
+                success: function(result) {
+                    self.monitors.push({
+                        id : data,
+                        name: monitor.name,
+                        description: monitor.description,
+                        state: monitor.state
+                    });
+                },
+                error: function(request,msg,error) {
+                    alert(msg);
+                }
             });
+
         }
+
+
         self.beginAdd = function() {
             $('#add').modal('show');
         }
+
         self.beginEdit = function(monitor) {
             editMonitorViewModel.setMonitor(monitor);
             $('#edit').modal('show');
         }
+
         self.edit = function(monitor, newmonitor) {
             self.updateMonitor(monitor, newmonitor);
         }
@@ -402,7 +354,7 @@
         self.updateMonitor = function(monitor, newmonitor) {
             var i = self.monitors.indexOf(monitor);
             var myData = {
-                'title': newmonitor.title,
+                'name': newmonitor.name,
                 'description': newmonitor.description,
                 'state': newmonitor.state
             };
@@ -414,7 +366,7 @@
                 contentType: 'application/json',
                 success: function(result) {
                     self.monitors()[i].id(newmonitor.id);
-                    self.monitors()[i].title(newmonitor.title);
+                    self.monitors()[i].name(newmonitor.name);
                     self.monitors()[i].description(newmonitor.description);
                     self.monitors()[i].state(newmonitor.state);
                 },
@@ -440,15 +392,13 @@
 
         }
         self.stateOff = function(monitor) {
-            var i = self.monitors.indexOf(monitor);
+            var idToSend = monitor['id'];
+            console.log(idToSend);
             var myData = {
-                'title': self.monitors()[i].title(),
-                'description': self.monitors()[i].description(),
                 'state': false
             };
             $.ajax({
-                //url: 'http://localhost:3000/monitors/' + i,
-                url: 'http://localhost:8080/nodes/' + i,
+                url: 'http://localhost:8080/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -463,7 +413,7 @@
         self.stateOn = function(monitor) {
             var i = self.monitors.indexOf(monitor);
             var myData = {
-                'title': self.monitors()[i].title(),
+                'name': self.monitors()[i].name(),
                 'description': self.monitors()[i].description(),
                 'state': true
             };
@@ -500,7 +450,7 @@
     function AddMonitorViewModel() {
         var self = this;
         self.id = ko.observable();
-        self.title = ko.observable();
+        self.name = ko.observable();
         self.description = ko.observable();
         self.state = ko.observable();
 
@@ -508,12 +458,12 @@
             $('#add').modal('hide');
             monitorsViewModel.add({
                 id: self.id(),
-                title: self.title(),
+                name: self.name(),
                 description: self.description(),
                 state: self.state()
             });
             self.id("");
-            self.title("");
+            self.name("");
             self.description("");
             self.state(false);
         }
@@ -522,7 +472,7 @@
     function EditMonitorViewModel() {
         var self = this;
         self.id = ko.observable();
-        self.title = ko.observable();
+        self.name = ko.observable();
         self.description = ko.observable();
         self.state = ko.observable();
 
@@ -530,7 +480,7 @@
             $('#edit').modal('hide');
             monitorsViewModel.edit(self.monitor, {
                 id: self.id(),
-                title: self.title(),
+                name: self.name(),
                 description: self.description() ,
                 state: self.state()
             });
@@ -539,7 +489,7 @@
         self.setMonitor = function(monitor) {
             self.monitor = monitor;
             self.id(monitor.id());
-            self.title(monitor.title());
+            self.name(monitor.name());
             self.description(monitor.description());
             self.state(monitor.state());
 
