@@ -366,12 +366,12 @@
         }
 
         self.updateMonitor = function(monitor, newmonitor) {
-            //var i = self.monitors.indexOf(monitor);
+            var i = self.monitors.indexOf(monitor);
+            var state =  document.getElementById("editState").checked.toString();
             var myData = {
-                'id':monitor.id(),
-                'name': newmonitor.name,
-                'description': newmonitor.description,
-                'state': newmonitor.state
+                'name': monitor.name(),
+                'description': monitor.description(),
+                'state': state
             };
             $.ajax({
                 //url: 'http://localhost:3000/monitors/' + i,
@@ -380,10 +380,9 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 success: function(result) {
-                    self.monitors()[i].id(monitor.id);
-                    self.monitors()[i].name(newmonitor.name);
-                    self.monitors()[i].description(newmonitor.description);
-                    self.monitors()[i].state(newmonitor.state);
+                    self.monitors()[i].name(monitor.name());
+                    self.monitors()[i].description(monitor.description());
+                    self.monitors()[i].state(state);
                 },
                 error: function(request,msg,error) {
                     alert(msg);
