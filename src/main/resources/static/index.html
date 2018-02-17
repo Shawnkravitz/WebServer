@@ -38,7 +38,6 @@
             -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
             box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
             -webkit-background-clip: padding-box;
-            -moz-background-clip: padding-box;
             background-clip: padding-box;
         }
 
@@ -312,14 +311,12 @@
 
         self.add = function(monitor){
             var myData = {
-                //'id': '',
                 'name': monitor.name,
                 'description': monitor.description,
                 'state': monitor.state
             };
 
             $.ajax({
-                //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/',
                 method: 'POST',
                 data: JSON.stringify(myData),
@@ -336,19 +333,6 @@
                     alert(msg);
                 }
             });
-            /*
-            $.post("http://localhost:8080/nodes/", {data: JSON.stringify(myData)}, function(data, status) {
-                self.monitors.push({
-                    //id : ko.observable(data),
-                    name: ko.observable(monitor.name),
-                    description: ko.observable(monitor.description),
-                    state: ko.observable(monitor.state)
-                });
-                myData.id=data;
-            }).fail(function(err, status) {
-                alert(err);
-            });*/
-            //alert(myData.id);
         }
 
 
@@ -373,7 +357,6 @@
                 'state': newmonitor.state
             };
             $.ajax({
-                //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/' + monitor.id(),
                 method: 'PUT',
                 data: JSON.stringify(myData),
@@ -392,7 +375,6 @@
             //var i = self.monitors.indexOf(monitor);
             var i = monitor.id();
             $.ajax({
-                //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/' + i,
                 method: 'DELETE',
                 contentType: 'application/json',
@@ -438,7 +420,6 @@
             };
 
             $.ajax({
-                //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
