@@ -366,9 +366,8 @@
         }
 
         self.updateMonitor = function(monitor, newmonitor) {
-            //var i = self.monitors.indexOf(monitor);
+            var i = self.monitors.indexOf(monitor);
             var myData = {
-                'id':monitor.id(),
                 'name': newmonitor.name,
                 'description': newmonitor.description,
                 'state': newmonitor.state
@@ -380,7 +379,6 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 success: function(result) {
-                    self.monitors()[i].id(monitor.id);
                     self.monitors()[i].name(newmonitor.name);
                     self.monitors()[i].description(newmonitor.description);
                     self.monitors()[i].state(newmonitor.state);
@@ -393,7 +391,6 @@
         self.remove = function(monitor) {
             //var i = self.monitors.indexOf(monitor);
             var i = monitor.id();
-            alert(i);
             $.ajax({
                 //url: 'http://localhost:3000/monitors/' + i,
                 url: 'http://localhost:8080/nodes/' + i,
@@ -413,6 +410,8 @@
             var idToSend = monitor.id();
             console.log(idToSend);
             var myData = {
+                'name': monitor.name(),
+                'description':monitor.description(),
                 'state': 'false'
             };
             $.ajax({
@@ -433,6 +432,8 @@
             var idToSend = monitor.id();
             console.log(idToSend);
             var myData = {
+                'name': monitor.name(),
+                'description':monitor.description(),
                 'state': 'true'
             };
 

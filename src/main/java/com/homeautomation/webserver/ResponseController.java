@@ -58,21 +58,33 @@ public class ResponseController {
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Node> editNode(@RequestBody String json,
-                         @PathVariable("id") String id) throws IOException {
+                                         @PathVariable("id") String id) throws IOException {
 
-        String state = "";
+        String name, description, state;
+        String[] fieldArray = new String[3];
+        int index = 0;
         JsonFactory factory = new JsonFactory();
         JsonParser parser = factory.createParser(json);
         while(!parser.isClosed()){
             JsonToken jsonToken = parser.nextToken();
             if (JsonToken.VALUE_STRING.equals(jsonToken)){
-                state = parser.getValueAsString();
+                fieldArray[index] = parser.getValueAsString();
+                System.out.println(fieldArray[index]);
+                index++;
             }
         }
+
+        name = fieldArray[0];
+        description = fieldArray[1];
+        state = fieldArray[2];
+
+
 
         Node nodeToUpdate = repository.findOne(id);
         System.out.println("PUT State: " + state);
         nodeToUpdate.setState(state);
+        nodeToUpdate.setName(name);
+        nodeToUpdate.setDescription(description);
         repository.save(nodeToUpdate);
         System.out.println("PUT ID:" + nodeToUpdate.getID() + " Name: " + nodeToUpdate.getName() + " Description: " + nodeToUpdate.getDescription() + " State: " + nodeToUpdate.getState());
         return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
@@ -116,7 +128,7 @@ public class ResponseController {
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Boolean> changePassword(@RequestBody String json,
-                                  @PathVariable("id") String id) throws IOException {
+                                                  @PathVariable("id") String id) throws IOException {
 
         String password = "";
         JsonFactory factory = new JsonFactory();
@@ -138,7 +150,7 @@ public class ResponseController {
     // code for checking credentials
     @RequestMapping(value = "/users/{id}", method = RequestMethod.POST)
     public ResponseEntity<Boolean> checkPassword(@RequestBody String json,
-                                 @PathVariable("id") String id) throws IOException {
+                                                 @PathVariable("id") String id) throws IOException {
 
         String password = "";
         JsonFactory factory = new JsonFactory();
