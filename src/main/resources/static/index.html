@@ -229,7 +229,7 @@
     </div>
     <div class="modal-body">
         <form class="form-horizontal">
-            <div class="control-group">
+            <div class="control-group" data-bind="visible: false">
                 <label class="control-label" for="editId">ID</label>
                 <div class="controls">
                     <input data-bind="value: id" type="text" id="editId" placeholder="ID" style="width: 300px;">
@@ -297,6 +297,11 @@
 
         $.get("http://localhost:8080/nodes", function(data) {
             $.each(data, function(i, node) {
+                if(node.state==='false'){
+                    node.state=false;
+                }else{
+                    node.state=true;
+                }
                 self.monitors.push({
                     id: ko.observable(node.id),
                     name: ko.observable(node.name),
@@ -310,10 +315,21 @@
 
 
         self.add = function(monitor){
+            var monState='true';
+            if(monitor.state != true){
+                monState='false';
+            };
+            
+            if(monitor.name.length===0) {
+                monitor.name = ' ';
+            };
+            if(monitor.description.length===0) {
+                monitor.description = ' ';
+            };
             var myData = {
                 'name': monitor.name,
                 'description': monitor.description,
-                'state': monitor.state
+                'state': monState
             };
 
             $.ajax({
@@ -350,11 +366,15 @@
         }
 
         self.updateMonitor = function(monitor, newmonitor) {
+            var monState='true';
+            if(newmonitor.state != true){
+                monState='false';
+            }
             var i = self.monitors.indexOf(monitor);
             var myData = {
                 'name': newmonitor.name,
                 'description': newmonitor.description,
-                'state': newmonitor.state
+                'state': monState
             };
             $.ajax({
                 url: 'http://localhost:8080/nodes/' + monitor.id(),
@@ -479,10 +499,11 @@
 
         self.editMonitor = function() {
             $('#edit').modal('hide');
+
             monitorsViewModel.edit(self.monitor, {
                 id: self.id(),
                 name: self.name(),
-                description: self.description() ,
+                description: self.description(),
                 state: self.state()
             });
         }
