@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Controller
+@CrossOrigin(origins = "*")
 public class ResponseController {
 
     // import node repository
