@@ -33,15 +33,17 @@ public class ResponseController {
     @RequestMapping(value = "/nodes", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> createNodeTest(@RequestBody String json) throws IOException {
-        logger.info("POST /nodes");
-        // Logs incoming json request
-        logger.info("Payload: " + json);
         ObjectMapper mapper = new ObjectMapper();
+
+        // Log the request
+        logger.info("POST /nodes");
+        // Log incoming json string payload
+        logger.info("Payload: " + json);
+
         Node node = mapper.readValue(json, Node.class);
         repository.save(node);
         // Log what was saved to the DB
-        logger.info("Wrote to DB: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
-        //System.out.println("POST ID:" + node.getID() + " Name: " + node.getName() + " Description: " + node.getDescription() + " State: " + node.getState());
+        logger.info("Payload saved to DB as: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
         return new ResponseEntity<String>(node.getID(), HttpStatus.OK);
     }
 
@@ -58,10 +60,9 @@ public class ResponseController {
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Node> findOneNode(@PathVariable("id") String id) {
+        // Log request
         logger.info("GET /nodes/" + id);
-        ResponseEntity response = new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
-        logger.info(response);
-        return response;
+        return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
     }
 
     // method for changing the state of a node (update)
@@ -69,10 +70,12 @@ public class ResponseController {
     @ResponseBody
     public ResponseEntity<Node> editNode(@RequestBody String json,
                                          @PathVariable("id") String id) throws IOException {
-
+        ObjectMapper mapper = new ObjectMapper();
+        // Log request
         logger.info("PUT /nodes/" + id);
-        // Logs incoming json request
+        // Logs incoming json string payload
         logger.info("Payload: " + json);
+
         String name, description, state;
         String[] fieldArray = new String[3];
         int index = 0;
@@ -96,10 +99,9 @@ public class ResponseController {
         nodeToUpdate.setName(name);
         nodeToUpdate.setDescription(description);
 
-        ObjectMapper mapper = new ObjectMapper();
-
         repository.save(nodeToUpdate);
-        logger.info("Wrote to DB: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nodeToUpdate));
+        // Log what was saved to the DB
+        logger.info("Payload saved to DB as: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nodeToUpdate));
         return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
     }
 
