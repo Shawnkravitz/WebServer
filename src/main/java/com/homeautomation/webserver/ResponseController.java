@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Controller
 public class ResponseController {
@@ -25,14 +27,21 @@ public class ResponseController {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LogManager.getLogger(ResponseController.class);
+
     // method for creating a node (create)
     @RequestMapping(value = "/nodes", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> createNodeTest(@RequestBody String json) throws IOException {
+        logger.info("POST /nodes");
+        // Logs incoming json request
+        logger.info("Payload: " + json);
         ObjectMapper mapper = new ObjectMapper();
         Node node = mapper.readValue(json, Node.class);
         repository.save(node);
-        System.out.println("POST ID:" + node.getID() + " Name: " + node.getName() + " Description: " + node.getDescription() + " State: " + node.getState());
+        // Log what was saved to the DB
+        logger.info("Wrote to DB: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+        //System.out.println("POST ID:" + node.getID() + " Name: " + node.getName() + " Description: " + node.getDescription() + " State: " + node.getState());
         return new ResponseEntity<String>(node.getID(), HttpStatus.OK);
     }
 
@@ -41,7 +50,7 @@ public class ResponseController {
     @RequestMapping(value = "/nodes", method = RequestMethod.GET )
     @ResponseBody
     public ResponseEntity<List<Node>> findAllNodes(){
-        System.out.println("GET");
+        logger.info("GET /nodes");
         return new ResponseEntity<List<Node>>(repository.findAll(), HttpStatus.OK);
     }
 
@@ -49,9 +58,10 @@ public class ResponseController {
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Node> findOneNode(@PathVariable("id") String id) {
-        System.out.println(id);
-        return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
-        //return repository.findOne(id);
+        logger.info("GET /nodes/" + id);
+        ResponseEntity response = new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
+        logger.info(response);
+        return response;
     }
 
     // method for changing the state of a node (update)
@@ -60,6 +70,9 @@ public class ResponseController {
     public ResponseEntity<Node> editNode(@RequestBody String json,
                                          @PathVariable("id") String id) throws IOException {
 
+        logger.info("PUT /nodes/" + id);
+        // Logs incoming json request
+        logger.info("Payload: " + json);
         String name, description, state;
         String[] fieldArray = new String[3];
         int index = 0;
@@ -69,7 +82,7 @@ public class ResponseController {
             JsonToken jsonToken = parser.nextToken();
             if (JsonToken.VALUE_STRING.equals(jsonToken)){
                 fieldArray[index] = parser.getValueAsString();
-                System.out.println(fieldArray[index]);
+                //System.out.println(fieldArray[index]);
                 index++;
             }
         }
@@ -78,15 +91,15 @@ public class ResponseController {
         description = fieldArray[1];
         state = fieldArray[2];
 
-
-
         Node nodeToUpdate = repository.findOne(id);
-        System.out.println("PUT State: " + state);
         nodeToUpdate.setState(state);
         nodeToUpdate.setName(name);
         nodeToUpdate.setDescription(description);
+
+        ObjectMapper mapper = new ObjectMapper();
+
         repository.save(nodeToUpdate);
-        System.out.println("PUT ID:" + nodeToUpdate.getID() + " Name: " + nodeToUpdate.getName() + " Description: " + nodeToUpdate.getDescription() + " State: " + nodeToUpdate.getState());
+        logger.info("Wrote to DB: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nodeToUpdate));
         return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
     }
 
@@ -94,7 +107,7 @@ public class ResponseController {
     @RequestMapping(value = "/nodes/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Boolean> deleteNode(@PathVariable("id") String id){
-        System.out.println("DELETE ID: " + id);
+        logger.info("DELETE /nodes/" + id);
         repository.delete(id);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
