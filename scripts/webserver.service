@@ -1,8 +1,14 @@
 [Unit]
-Description=Web service back-end
+Description=webserver application
+After=syslog.target network.target
+
 [Service]
-ExecStart=/usr/bin/java -jar /home/ubuntu/webserver-0.0.1-SNAPSHOT.jar
 Type=simple
-User=root
+User=ubuntu
+ExecStart=/usr/bin/java -jar /home/ubuntu/webserver-0.0.1-SNAPSHOT.jar | grep  --line-buffered "c.h.w." | slacktee -n
+
+# In case if it gets stopped, restart it immediately
+Restart=always
+
 [Install]
 WantedBy=multi-user.target
