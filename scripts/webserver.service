@@ -5,7 +5,7 @@ After=syslog.target network.target
 [Service]
 Type=simple
 User=ubuntu
-ExecStart=/usr/bin/java -jar /home/ubuntu/webserver-0.0.1-SNAPSHOT.jar | grep  --line-buffered "c.h.w." | slacktee -n
+ExecStart=/bin/bash start_webserver.sh
 
 # In case if it gets stopped, restart it immediately
 Restart=always
