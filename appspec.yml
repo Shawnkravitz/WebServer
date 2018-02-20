@@ -4,7 +4,7 @@ files:
   - source: ./webserver-0.0.1-SNAPSHOT.jar
     destination: /home/ubuntu
   - source: ./webserver.service
-    destination: /etc/systemd/system
+    destination: /home/ubuntu/
 hooks:
   ApplicationStart:
     - location: start_server.sh
