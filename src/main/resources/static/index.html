@@ -295,7 +295,7 @@
 
         self.monitors = ko.observableArray();
 
-        $.get("http://localhost:8080/nodes", function(data) {
+        $.get("http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes", function(data) {
             $.each(data, function(i, node) {
                 if(node.state==='false'){
                     node.state=false;
@@ -333,7 +333,7 @@
             };
 
             $.ajax({
-                url: 'http://localhost:8080/nodes/',
+                url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/',
                 method: 'POST',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -377,7 +377,7 @@
                 'state': monState
             };
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + monitor.id(),
+                url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + monitor.id(),
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -395,7 +395,7 @@
             //var i = self.monitors.indexOf(monitor);
             var i = monitor.id();
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + i,
+                url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + i,
                 method: 'DELETE',
                 contentType: 'application/json',
                 success: function(result) {
@@ -417,7 +417,7 @@
                 'state': 'false'
             };
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + idToSend,
+                url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -440,7 +440,7 @@
             };
 
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + idToSend,
+                url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
