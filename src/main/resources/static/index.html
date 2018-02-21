@@ -279,6 +279,12 @@
                     <input data-bind="value: password" type="text" id="inputPassword" placeholder="Password" style="width: 200px;">
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Server</label>
+                <div class="controls">
+                    <select data-bind="options: serverList, selectedOptions: serverURL" id="inputServerURL" placeholder="serverURL" style="width: 200px" size="2" multiple="true"></select>
+                </div>
+            </div>
         </form>
     </div>
     <div class="modal-footer">
@@ -289,12 +295,13 @@
     </div>
 </div>
 <script>
-
+    var myServerURL;
     function MonitorsViewModel() {
         var self = this;
 
         self.monitors = ko.observableArray();
 
+        /*
         $.get("http://localhost:8080/nodes", function(data) {
             $.each(data, function(i, node) {
                 if(node.state==='false'){
@@ -310,7 +317,7 @@
                 });
             });
 
-        });
+        });*/
 
 
 
@@ -319,7 +326,7 @@
             if(monitor.state != true){
                 monState='false';
             };
-            
+
             if(monitor.name.length===0) {
                 monitor.name = ' ';
             };
@@ -333,7 +340,8 @@
             };
 
             $.ajax({
-                url: 'http://localhost:8080/nodes/',
+                //url: 'http://localhost:8080/nodes/',
+                url: myServerURL + '/nodes/',
                 method: 'POST',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -377,7 +385,8 @@
                 'state': monState
             };
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + monitor.id(),
+                //url: 'http://localhost:8080/nodes/' + monitor.id(),
+                url: myServerURL + '/nodes/' + monitor.id(),
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -395,7 +404,8 @@
             //var i = self.monitors.indexOf(monitor);
             var i = monitor.id();
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + i,
+                //url: 'http://localhost:8080/nodes/' + i,
+                url: myServerURL + '/nodes/' + i,
                 method: 'DELETE',
                 contentType: 'application/json',
                 success: function(result) {
@@ -417,7 +427,8 @@
                 'state': 'false'
             };
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + idToSend,
+                //url: 'http://localhost:8080/nodes/' + idToSend,
+                url: myServerURL + '/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -440,7 +451,8 @@
             };
 
             $.ajax({
-                url: 'http://localhost:8080/nodes/' + idToSend,
+                //url: 'http://localhost:8080/nodes/' + idToSend,
+                url: myServerURL + '/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
@@ -456,9 +468,32 @@
         self.beginLogin = function() {
             $('#login').modal('show');
         }
-        self.login = function(username, password) {
+        self.login = function(username, password, serverURL) {
             if(username == "nick" && password == "test") {
-                alert("Login Success");
+                //alert("Login Success: " + serverURL);
+                if(serverURL=='Localhost'){
+                    myServerURL='http://localhost:8080';
+                }
+                if(serverURL=='Amazon AWS'){
+                    myServerURL='http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/'
+                }
+                //$.get("http://localhost:8080/nodes", function(data) {
+                $.get(myServerURL + "/nodes", function(data) {
+                    $.each(data, function(i, node) {
+                    if(node.state==='false'){
+                        node.state=false;
+                    }else{
+                        node.state=true;
+                    }
+                        self.monitors.push({
+                            id: ko.observable(node.id),
+                            name: ko.observable(node.name),
+                            state: ko.observable(node.state),
+                            description: ko.observable(node.description)
+                        });
+                    });
+
+                });
             } else {
                 if(alert('Login Failure')){}
                 else{    window.location.reload();}
@@ -523,10 +558,12 @@
         var self = this;
         self.username = ko.observable();
         self.password = ko.observable();
+        self.serverList = ko.observable(['Localhost','Amazon AWS']);
+        self.serverURL = ko.observable(['Localhost']);
 
         self.submitLogin = function() {
             $('#login').modal('hide');
-            monitorsViewModel.login(self.username(), self.password());
+            monitorsViewModel.login(self.username(), self.password(), self.serverURL());
         }
     }
 
