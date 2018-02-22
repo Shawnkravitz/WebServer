@@ -13,12 +13,15 @@ phases:
     #commands:
       # - command
       # - command
-  #pre_build:
-    #commands:
-      # - command
+  pre_build:
+    commands:
+       - echo Entered the pre_build phase...
+       - sed -i 's/localhost:8080/capstone-elb-1089695435.us-east-1.elb.amazonaws.com/g' src/main/resources/static/index.html
       # - command
   build:
     commands:
+       - echo Entered the build phase...
+       - echo Build started on `date`
        - mvn package
       # - command
   #post_build:
