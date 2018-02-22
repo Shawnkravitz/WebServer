@@ -295,7 +295,25 @@
         var self = this;
 
         self.monitors = ko.observableArray();
+        $.get(myServerURL + "/nodes", function(data) {
+            $.each(data, function(i, node) {
+                if(node.state==='false'){
+                    node.state=false;
+                }else{
+                    node.state=true;
+                }
+                self.monitors.push({
+                    id: ko.observable(node.id),
+                    name: ko.observable(node.name),
+                    state: ko.observable(node.state),
+                    description: ko.observable(node.description)
+                });
+            });
+        });
 
+        self.beginAdd = function() {
+            $('#add').modal('show');
+        }
         self.add = function(monitor){
             var monState='true';
             if(monitor.state != true){
@@ -334,16 +352,10 @@
             });
         }
 
-
-        self.beginAdd = function() {
-            $('#add').modal('show');
-        }
-
         self.beginEdit = function(monitor) {
             editMonitorViewModel.setMonitor(monitor);
             $('#edit').modal('show');
         }
-
         self.edit = function(monitor, newmonitor) {
             self.updateMonitor(monitor, newmonitor);
         }
@@ -375,6 +387,7 @@
                 }
             });
         }
+
         self.remove = function(monitor) {
             //var i = self.monitors.indexOf(monitor);
             var i = monitor.id();
@@ -392,6 +405,7 @@
             });
 
         }
+
         self.stateOff = function(monitor) {
             var i = self.monitors.indexOf(monitor);
             var idToSend = monitor.id();
@@ -415,6 +429,7 @@
                 }
             });
         }
+
         self.stateOn = function(monitor) {
             var i = self.monitors.indexOf(monitor);
             var idToSend = monitor.id();
@@ -445,24 +460,7 @@
         }
         self.login = function(username, password) {
             if(username == "nick" && password == "test") {
-                alert("Login Success: " + serverURL);
-
-                $.get(myServerURL + "/nodes", function(data) {
-                    $.each(data, function(i, node) {
-                        if(node.state==='false'){
-                            node.state=false;
-                        }else{
-                            node.state=true;
-                        }
-                        self.monitors.push({
-                            id: ko.observable(node.id),
-                            name: ko.observable(node.name),
-                            state: ko.observable(node.state),
-                            description: ko.observable(node.description)
-                        });
-                    });
-
-                });
+                alert("Login Success");
             } else {
                 if(alert('Login Failure')){}
                 else{    window.location.reload();}
