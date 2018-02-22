@@ -333,7 +333,6 @@
             };
 
             $.ajax({
-                //url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/',
                 url: myServerURL + '/nodes/',
                 method: 'POST',
                 data: JSON.stringify(myData),
@@ -372,7 +371,6 @@
                 'state': monState
             };
             $.ajax({
-                //url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + monitor.id(),
                 url: myServerURL + '/nodes/' + monitor.id(),
                 method: 'PUT',
                 data: JSON.stringify(myData),
@@ -392,7 +390,6 @@
             //var i = self.monitors.indexOf(monitor);
             var i = monitor.id();
             $.ajax({
-                //url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + i,
                 url: myServerURL + '/nodes/' + i,
                 method: 'DELETE',
                 contentType: 'application/json',
@@ -416,7 +413,6 @@
                 'state': 'false'
             };
             $.ajax({
-                //url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + idToSend,
                 url: myServerURL + '/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
@@ -441,7 +437,6 @@
             };
 
             $.ajax({
-                //url: 'http://capstone-elb-1089695435.us-east-1.elb.amazonaws.com/nodes/' + idToSend,
                 url: myServerURL + '/nodes/' + idToSend,
                 method: 'PUT',
                 data: JSON.stringify(myData),
