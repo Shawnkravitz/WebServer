@@ -290,12 +290,13 @@
 </div>
 <script>
     const myServerURL = "http://localhost:8080";
+    var jwtAuthToken;
 
     function MonitorsViewModel() {
         var self = this;
 
         self.monitors = ko.observableArray();
-
+        /*
         $.get(myServerURL + "/nodes", function(data) {
             $.each(data, function(i, node) {
                 if(node.state==='false'){
@@ -310,7 +311,7 @@
                     description: ko.observable(node.description)
                 });
             });
-        });
+        });*/
 
         self.beginAdd = function() {
             $('#add').modal('show');
@@ -338,6 +339,9 @@
                 method: 'POST',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                },
                 success: function(result) {
                     self.monitors.push({
                         id : ko.observable(result),
@@ -376,6 +380,9 @@
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                },
                 success: function(result) {
                     self.monitors()[i].name(newmonitor.name);
                     self.monitors()[i].description(newmonitor.description);
@@ -394,6 +401,9 @@
                 url: myServerURL + '/nodes/' + i,
                 method: 'DELETE',
                 contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                },
                 success: function(result) {
                     self.monitors.remove(monitor);
                 },
@@ -418,6 +428,9 @@
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                },
                 success: function(result) {
                     self.monitors()[i].state(false);
                 },
@@ -442,6 +455,9 @@
                 method: 'PUT',
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                },
                 success: function(result) {
                     self.monitors()[i].state(true);
                 },
@@ -455,12 +471,45 @@
             $('#login').modal('show');
         }
         self.login = function(username, password) {
-            if(username == "nick" && password == "test") {
-                alert("Login Success");
-            } else {
-                if(alert('Login Failure')){}
-                else{    window.location.reload();}
-            }
+            var myData = {
+                'username': username,
+                'password': password
+            };
+            $.ajax({
+                url: myServerURL + '/login',
+                method: 'POST',
+                data: JSON.stringify(myData),
+                contentType: 'application/json',
+                success: function(result, status, xhr) {
+                    jwtAuthToken =  xhr.getResponseHeader('Authorization');
+                    $.ajax({
+                        url: myServerURL + '/nodes/',
+                        method: 'GET',
+                        contentType: 'application/json',
+                        beforeSend: function (xhr) {   //Include the bearer token in header
+                            xhr.setRequestHeader("Authorization", jwtAuthToken);
+                        },
+                        success: function (data) {
+                            $.each(data, function (i, node) {
+                                if (node.state === 'false') {
+                                    node.state = false;
+                                } else {
+                                    node.state = true;
+                                }
+                                self.monitors.push({
+                                    id: ko.observable(node.id),
+                                    name: ko.observable(node.name),
+                                    state: ko.observable(node.state),
+                                    description: ko.observable(node.description)
+                                });
+                            });
+                        }
+                    });
+                },
+                error: function(request,msg,error) {
+                    alert("Request: " + request + ", Msg: " + msg + ", Error: " + error);
+                }
+            });
         }
 
         self.beginLogin();
