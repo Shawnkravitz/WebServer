@@ -1,4 +1,4 @@
-package com.homeautomation.webserver;
+package com.homeautomation.webserver.node;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

@@ -1,23 +1,17 @@
-package com.homeautomation.webserver;
+package com.homeautomation.webserver.user;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
-public class User {
+public class ApplicationUser {
 
-    @Id private String id;
+    @Id
+    private String id;
     private String username;
     private String password;
 
-    public User(){} // required for JSON object mapping
-
-    public User (String username, String password){
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getName(){
+    public String getUsername(){
         return username;
     }
 

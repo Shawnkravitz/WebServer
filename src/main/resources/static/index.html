@@ -295,6 +295,7 @@
         var self = this;
 
         self.monitors = ko.observableArray();
+
         $.get(myServerURL + "/nodes", function(data) {
             $.each(data, function(i, node) {
                 if(node.state==='false'){

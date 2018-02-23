@@ -1,10 +1,12 @@
-package com.homeautomation.webserver;
+package com.homeautomation.webserver.node;
 
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.homeautomation.webserver.user.ApplicationUser;
+import com.homeautomation.webserver.user.ApplicationUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,8 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Controller
-@CrossOrigin(origins = "*")
-public class ResponseController {
+public class NodeController {
 
     // import node repository
     @Autowired
@@ -26,9 +27,9 @@ public class ResponseController {
 
     // import user repository
     @Autowired
-    private UserRepository userRepository;
+    private ApplicationUserRepository userRepository;
 
-    private static final Logger logger = LogManager.getLogger(ResponseController.class);
+    private static final Logger logger = LogManager.getLogger(NodeController.class);
 
     // method for creating a node (create)
     @RequestMapping(value = "/nodes", method = RequestMethod.POST)
@@ -127,7 +128,7 @@ public class ResponseController {
     @ResponseBody
     public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        User user = mapper.readValue(json, User.class);
+        ApplicationUser user = mapper.readValue(json, ApplicationUser.class);
         userRepository.save(user);
         return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
     }
@@ -156,7 +157,7 @@ public class ResponseController {
             }
         }
 
-        User userToUpdate = userRepository.findOne(id);
+        ApplicationUser userToUpdate = userRepository.findOne(id);
         userToUpdate.setPassword(password);
         userRepository.save(userToUpdate);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
@@ -188,8 +189,8 @@ public class ResponseController {
     // returns all users
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<List<User>> findAllUsers(){
-        return new ResponseEntity<List<User>>(userRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<ApplicationUser>> findAllUsers(){
+        return new ResponseEntity<List<ApplicationUser>>(userRepository.findAll(), HttpStatus.OK);
     }
 
 
