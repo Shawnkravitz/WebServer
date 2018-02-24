@@ -290,7 +290,7 @@
 </div>
 <script>
     const myServerURL = "http://localhost:8080";
-    var jwtAuthToken;
+    //var jwtAuthToken;
 
     function MonitorsViewModel() {
         var self = this;
@@ -340,7 +340,7 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {   //Include the bearer token in header
-                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                 },
                 success: function(result) {
                     self.monitors.push({
@@ -381,7 +381,7 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {   //Include the bearer token in header
-                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                 },
                 success: function(result) {
                     self.monitors()[i].name(newmonitor.name);
@@ -402,7 +402,7 @@
                 method: 'DELETE',
                 contentType: 'application/json',
                 beforeSend: function (xhr) {   //Include the bearer token in header
-                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                 },
                 success: function(result) {
                     self.monitors.remove(monitor);
@@ -429,7 +429,7 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {   //Include the bearer token in header
-                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                 },
                 success: function(result) {
                     self.monitors()[i].state(false);
@@ -456,7 +456,7 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 beforeSend: function (xhr) {   //Include the bearer token in header
-                    xhr.setRequestHeader("Authorization", jwtAuthToken);
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                 },
                 success: function(result) {
                     self.monitors()[i].state(true);
@@ -481,13 +481,14 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 success: function(result, status, xhr) {
-                    jwtAuthToken =  xhr.getResponseHeader('Authorization');
+                    //jwtAuthToken =  xhr.getResponseHeader('Authorization');
+                    tokenSuccess(xhr.getResponseHeader('Authorization'));
                     $.ajax({
                         url: myServerURL + '/nodes/',
                         method: 'GET',
                         contentType: 'application/json',
                         beforeSend: function (xhr) {   //Include the bearer token in header
-                            xhr.setRequestHeader("Authorization", jwtAuthToken);
+                            xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                         },
                         success: function (data) {
                             $.each(data, function (i, node) {
@@ -575,6 +576,10 @@
             $('#login').modal('hide');
             monitorsViewModel.login(self.username(), self.password());
         }
+    }
+
+    function tokenSuccess(response){
+        sessionStorage.authKey = response;
     }
 
     var monitorsViewModel = new MonitorsViewModel();
