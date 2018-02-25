@@ -287,10 +287,44 @@
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 
     </div>
+    <div class="modal-footer">
+        <button data-bind="click: beginSignup" class="btn btn-primary">Sign Up</button>
+    </div>
 </div>
+<div id="signup" class="modal" tabindex="=1" role="dialog" aria-labelledby="signupLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="signupLabel">Sign up</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputMonitor">Username</label>
+                <div class="controls">
+                    <input data-bind="value: signupUsername" type="text" id="inputSignupUsername" placeholder="Username" style="width: 200px;">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Password</label>
+                <div class="controls">
+                    <input data-bind="value: signupPassword" type="text" id="inputSignupPassword" placeholder="Password" style="width: 200px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+
+        <button data-bind="click: submitSignup" class="btn btn-primary">Submit</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
+    </div>
+</div>
+
+
+
+
 <script>
     const myServerURL = "http://localhost:8080";
-    //var jwtAuthToken;
 
     function MonitorsViewModel() {
         var self = this;
@@ -467,6 +501,28 @@
             });
         }
 
+        self.beginSignup = function(){
+            $('#signup').modal('show');
+
+        }
+
+        self.signup = function(username, password){
+            var myData = {
+                'username': username,
+                'password': password
+            }
+            $.ajax({
+                url: myServerURL + '/users/sign-up',
+                method: 'POST',
+                data: JSON.stringify(myData),
+                contentType: 'application/json',
+                success: function(result, status, xhr){
+                    self.login(username, password);
+                    $('#signup').modal('hide');
+                }
+            });
+        }
+
         self.beginLogin = function() {
             $('#login').modal('show');
         }
@@ -508,7 +564,7 @@
                     });
                 },
                 error: function(request,msg,error) {
-                    alert("Request: " + request + ", Msg: " + msg + ", Error: " + error);
+                    alert("Login failed");
                 }
             });
         }
@@ -576,6 +632,22 @@
             $('#login').modal('hide');
             monitorsViewModel.login(self.username(), self.password());
         }
+
+        self.beginSignup = function(){
+            $('#login').modal('hide');
+            monitorsViewModel.beginSignup();
+        }
+    }
+
+    function SignupViewModel(){
+        var self = this;
+        self.signupUsername = ko.observable();
+        self.signupPassword = ko.observable();
+
+        self.submitSignup = function(){
+            $('signup').modal('hide');
+            monitorsViewModel.signup(self.signupUsername(), self.signupPassword());
+        }
     }
 
     function tokenSuccess(response){
@@ -586,10 +658,12 @@
     var addMonitorsViewModel = new AddMonitorViewModel();
     var editMonitorViewModel = new EditMonitorViewModel();
     var loginViewModel = new LoginViewModel();
+    var signupViewModel = new SignupViewModel();
     ko.applyBindings(monitorsViewModel, $('#main')[0]);
     ko.applyBindings(addMonitorsViewModel, $('#add')[0]);
     ko.applyBindings(editMonitorViewModel, $('#edit')[0]);
     ko.applyBindings(loginViewModel, $('#login')[0]);
+    ko.applyBindings(signupViewModel, $('#signup')[0]);
 
 
 
