@@ -268,7 +268,7 @@
     <div class="modal-body">
         <form class="form-horizontal">
             <div class="control-group">
-                <label class="control-label" for="inputMonitor">Username</label>
+                <label class="control-label" for="inputUsername">Username</label>
                 <div class="controls">
                     <input data-bind="value: username" type="text" id="inputUsername" placeholder="Username" style="width: 200px;">
                 </div>
@@ -287,31 +287,76 @@
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
 
     </div>
+    <div class="modal-footer">
+        <button data-bind="click: beginSignup" class="btn btn-primary">Sign Up</button>
+    </div>
 </div>
+<div id="signup" class="modal" tabindex="=1" role="dialog" aria-labelledby="signupLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="signupLabel">Sign up</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputSignupUsername">Username</label>
+                <div class="controls">
+                    <input data-bind="value: signupUsername" type="text" id="inputSignupUsername" placeholder="Username" style="width: 200px;">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Password</label>
+                <div class="controls">
+                    <input data-bind="value: signupPassword" type="text" id="inputSignupPassword" placeholder="Password" style="width: 200px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+
+        <button data-bind="click: submitSignup" class="btn btn-primary">Submit</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+
+    </div>
+</div>
+
+
+
+
 <script>
     const myServerURL = "http://localhost:8080";
-    //var jwtAuthToken;
 
     function MonitorsViewModel() {
         var self = this;
 
         self.monitors = ko.observableArray();
-        /*
-        $.get(myServerURL + "/nodes", function(data) {
-            $.each(data, function(i, node) {
-                if(node.state==='false'){
-                    node.state=false;
-                }else{
-                    node.state=true;
-                }
-                self.monitors.push({
-                    id: ko.observable(node.id),
-                    name: ko.observable(node.name),
-                    state: ko.observable(node.state),
-                    description: ko.observable(node.description)
+        tokenSuccess(xhr.getResponseHeader('Authorization'));
+        $.ajax({
+            url: myServerURL + '/nodes/',
+            method: 'GET',
+            contentType: 'application/json',
+            beforeSend: function (xhr) {   //Include the bearer token in header
+                xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+            },
+            success: function (data) {
+                $.each(data, function (i, node) {
+                    if (node.state === 'false') {
+                        node.state = false;
+                    } else {
+                        node.state = true;
+                    }
+                    self.monitors.push({
+                        id: ko.observable(node.id),
+                        name: ko.observable(node.name),
+                        state: ko.observable(node.state),
+                        description: ko.observable(node.description)
+                    });
                 });
-            });
-        });*/
+            },
+            error: function(request,msg,error) {
+
+            }
+        });
 
         self.beginAdd = function() {
             $('#add').modal('show');
@@ -466,54 +511,76 @@
                 }
             });
         }
+        /*
+                self.beginSignup = function(){
+                    $('#signup').modal('show');
 
-        self.beginLogin = function() {
-            $('#login').modal('show');
-        }
-        self.login = function(username, password) {
-            var myData = {
-                'username': username,
-                'password': password
-            };
-            $.ajax({
-                url: myServerURL + '/login',
-                method: 'POST',
-                data: JSON.stringify(myData),
-                contentType: 'application/json',
-                success: function(result, status, xhr) {
-                    //jwtAuthToken =  xhr.getResponseHeader('Authorization');
-                    tokenSuccess(xhr.getResponseHeader('Authorization'));
+                }
+
+                self.signup = function(username, password){
+                    var myData = {
+                        'username': username,
+                        'password': password
+                    }
                     $.ajax({
-                        url: myServerURL + '/nodes/',
-                        method: 'GET',
+                        url: myServerURL + '/users/sign-up',
+                        method: 'POST',
+                        data: JSON.stringify(myData),
                         contentType: 'application/json',
-                        beforeSend: function (xhr) {   //Include the bearer token in header
-                            xhr.setRequestHeader("Authorization", sessionStorage.authKey);
-                        },
-                        success: function (data) {
-                            $.each(data, function (i, node) {
-                                if (node.state === 'false') {
-                                    node.state = false;
-                                } else {
-                                    node.state = true;
-                                }
-                                self.monitors.push({
-                                    id: ko.observable(node.id),
-                                    name: ko.observable(node.name),
-                                    state: ko.observable(node.state),
-                                    description: ko.observable(node.description)
-                                });
-                            });
+                        success: function(result, status, xhr){
+                            self.login(username, password);
+                            $('#signup').modal('hide');
                         }
                     });
-                },
-                error: function(request,msg,error) {
-                    alert("Request: " + request + ", Msg: " + msg + ", Error: " + error);
                 }
-            });
-        }
 
-        self.beginLogin();
+                self.beginLogin = function() {
+                    $('#login').modal('show');
+                }
+                self.login = function(username, password) {
+                    var myData = {
+                        'username': username,
+                        'password': password
+                    };
+                    $.ajax({
+                        url: myServerURL + '/login',
+                        method: 'POST',
+                        data: JSON.stringify(myData),
+                        contentType: 'application/json',
+                        success: function(result, status, xhr) {
+                            //jwtAuthToken =  xhr.getResponseHeader('Authorization');
+                            tokenSuccess(xhr.getResponseHeader('Authorization'));
+                            $.ajax({
+                                url: myServerURL + '/nodes/',
+                                method: 'GET',
+                                contentType: 'application/json',
+                                beforeSend: function (xhr) {   //Include the bearer token in header
+                                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+                                },
+                                success: function (data) {
+                                    $.each(data, function (i, node) {
+                                        if (node.state === 'false') {
+                                            node.state = false;
+                                        } else {
+                                            node.state = true;
+                                        }
+                                        self.monitors.push({
+                                            id: ko.observable(node.id),
+                                            name: ko.observable(node.name),
+                                            state: ko.observable(node.state),
+                                            description: ko.observable(node.description)
+                                        });
+                                    });
+                                }
+                            });
+                        },
+                        error: function(request,msg,error) {
+                            alert("Login failed");
+                        }
+                    });
+                }
+        */
+        //self.beginLogin();
     }
 
     function AddMonitorViewModel() {
@@ -566,7 +633,7 @@
         }
 
     }
-
+    /*
     function LoginViewModel() {
         var self = this;
         self.username = ko.observable();
@@ -576,8 +643,24 @@
             $('#login').modal('hide');
             monitorsViewModel.login(self.username(), self.password());
         }
+
+        self.beginSignup = function(){
+            $('#login').modal('hide');
+            monitorsViewModel.beginSignup();
+        }
     }
 
+    function SignupViewModel(){
+        var self = this;
+        self.signupUsername = ko.observable();
+        self.signupPassword = ko.observable();
+
+        self.submitSignup = function(){
+            $('signup').modal('hide');
+            monitorsViewModel.signup(self.signupUsername(), self.signupPassword());
+        }
+    }
+    */
     function tokenSuccess(response){
         sessionStorage.authKey = response;
     }
@@ -585,11 +668,13 @@
     var monitorsViewModel = new MonitorsViewModel();
     var addMonitorsViewModel = new AddMonitorViewModel();
     var editMonitorViewModel = new EditMonitorViewModel();
-    var loginViewModel = new LoginViewModel();
+    //var loginViewModel = new LoginViewModel();
+    //var signupViewModel = new SignupViewModel();
     ko.applyBindings(monitorsViewModel, $('#main')[0]);
     ko.applyBindings(addMonitorsViewModel, $('#add')[0]);
     ko.applyBindings(editMonitorViewModel, $('#edit')[0]);
-    ko.applyBindings(loginViewModel, $('#login')[0]);
+    //ko.applyBindings(loginViewModel, $('#login')[0]);
+    //ko.applyBindings(signupViewModel, $('#signup')[0]);
 
 
 
