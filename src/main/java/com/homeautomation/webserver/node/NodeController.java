@@ -18,7 +18,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Controller
+@RestController
+@RequestMapping("/nodes")
 public class NodeController {
 
     // import node repository
@@ -32,7 +33,7 @@ public class NodeController {
     private static final Logger logger = LogManager.getLogger(NodeController.class);
 
     // method for creating a node (create)
-    @RequestMapping(value = "/nodes", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> createNodeTest(@RequestBody String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -49,9 +50,8 @@ public class NodeController {
         return new ResponseEntity<String>(node.getID(), HttpStatus.OK);
     }
 
-
     // method for retrieving all nodes (read)
-    @RequestMapping(value = "/nodes", method = RequestMethod.GET )
+    @RequestMapping(value = "/", method = RequestMethod.GET )
     @ResponseBody
     public ResponseEntity<List<Node>> findAllNodes(){
         logger.info("GET /nodes");
@@ -59,7 +59,7 @@ public class NodeController {
     }
 
     // method for retrieving specific node information (read)
-    @RequestMapping(value = "/nodes/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Node> findOneNode(@PathVariable("id") String id) {
         // Log request
@@ -68,7 +68,7 @@ public class NodeController {
     }
 
     // method for changing the state of a node (update)
-    @RequestMapping(value = "/nodes/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Node> editNode(@RequestBody String json,
                                          @PathVariable("id") String id) throws IOException {
@@ -108,90 +108,12 @@ public class NodeController {
     }
 
     // method for deleting node (delete)
-    @RequestMapping(value = "/nodes/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Boolean> deleteNode(@PathVariable("id") String id){
         logger.info("DELETE /nodes/" + id);
         repository.delete(id);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
-
-    @RequestMapping(value="/view", produces = {
-            MediaType.TEXT_HTML_VALUE},
-            method = RequestMethod.GET)
-    public String viewContacts () {
-        return "node-listing";
-    }
-
-    // code for adding user
-    @RequestMapping(value = "/users", method= RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        ApplicationUser user = mapper.readValue(json, ApplicationUser.class);
-        userRepository.save(user);
-        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
-    }
-
-    // code for deleting user
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public ResponseEntity<Boolean> deleteUser(@PathVariable("id") String id){
-        userRepository.delete(id);
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-    }
-
-    // code for changing password
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.PUT)
-    @ResponseBody
-    public ResponseEntity<Boolean> changePassword(@RequestBody String json,
-                                                  @PathVariable("id") String id) throws IOException {
-
-        String password = "";
-        JsonFactory factory = new JsonFactory();
-        JsonParser parser = factory.createParser(json);
-        while(!parser.isClosed()){
-            JsonToken jsonToken = parser.nextToken();
-            if (JsonToken.VALUE_STRING.equals(jsonToken)){
-                password = parser.getValueAsString();
-            }
-        }
-
-        ApplicationUser userToUpdate = userRepository.findOne(id);
-        userToUpdate.setPassword(password);
-        userRepository.save(userToUpdate);
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-    }
-
-
-    // code for checking credentials
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.POST)
-    public ResponseEntity<Boolean> checkPassword(@RequestBody String json,
-                                                 @PathVariable("id") String id) throws IOException {
-
-        String password = "";
-        JsonFactory factory = new JsonFactory();
-        JsonParser parser = factory.createParser(json);
-        while(!parser.isClosed()){
-            JsonToken jsonToken = parser.nextToken();
-            if (JsonToken.VALUE_STRING.equals(jsonToken)){
-                password = parser.getValueAsString();
-            }
-        }
-        if (userRepository.findOne(id).getPassword().equals(password)){
-            return new ResponseEntity<Boolean>(true, HttpStatus.OK);
-        }
-        else{
-            return new ResponseEntity<Boolean>(false, HttpStatus.OK);
-        }
-    }
-
-    // returns all users
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<List<ApplicationUser>> findAllUsers(){
-        return new ResponseEntity<List<ApplicationUser>>(userRepository.findAll(), HttpStatus.OK);
-    }
-
-
+    
 }
