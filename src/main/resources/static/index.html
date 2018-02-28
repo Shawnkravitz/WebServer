@@ -631,26 +631,26 @@
                             });
                         }
                     });
+                    $.ajax({
+                        url: myServerURL + '/users/',
+                        method: 'GET',
+                        contentType: 'application/json',
+                        beforeSend: function (xhr) {   //Include the bearer token in header
+                            xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+                        },
+                        success: function (data) {
+                            $.each(data, function (j, user) {
+                                self.users.push({
+                                    id: ko.observable(user.id),
+                                    username: ko.observable(user.username),
+                                    password: ko.observable(user.password),
+                                });
+                            });
+                        }
+                    });
                 },
                 error: function(request,msg,error) {
                     alert("Login failed");
-                }
-            });
-            $.ajax({
-                url: myServerURL + '/users/',
-                method: 'GET',
-                contentType: 'application/json',
-                beforeSend: function (xhr) {   //Include the bearer token in header
-                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
-                },
-                success: function (data) {
-                    $.each(data, function (j, user) {
-                        self.users.push({
-                            id: ko.observable(user.id),
-                            username: ko.observable(user.username),
-                            password: ko.observable(user.password),
-                        });
-                    });
                 }
             });
         }
@@ -756,7 +756,7 @@
 
         });*/
 
-        self.add = function(user){
+        self.useradd = function(user){
             var myData = {
                 'username': user.username,
                 'password': user.password
@@ -775,15 +775,7 @@
                         username: ko.observable(user.username),
                         password: ko.observable(user.password),
                     });
-                    $.ajax({
-                        url: myServerURL + '/users/sign-up',
-                        method: 'POST',
-                        data: JSON.stringify(myData),
-                        contentType: 'application/json',
-                        success: function(result, status, xhr){
-                            alert('success');
-                        }
-                    });
+
                 },
                 error: function(request,msg,error) {
                     alert(msg);
@@ -801,7 +793,7 @@
             $('#edituser').modal('show');
         }
 
-        self.edit = function(user, newuser) {
+        self.useredit = function(user, newuser) {
             self.updateUser(user, newuser);
         }
 
@@ -856,7 +848,7 @@
 
         self.addUser = function() {
             $('#adduser').modal('hide');
-            usersViewModel.add({
+            usersViewModel.useradd({
                 id: self.id(),
                 username: self.username(),
                 passsword: self.password(),
@@ -875,7 +867,7 @@
 
         self.editUser = function() {
             $('#edituser').modal('hide');
-            usersViewModel.edit(self.user, {
+            usersViewModel.useredit(self.user, {
                 id: self.id(),
                 username: self.username(),
                 password: self.password() ,

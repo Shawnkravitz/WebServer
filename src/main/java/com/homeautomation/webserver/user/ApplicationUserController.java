@@ -104,6 +104,7 @@ public class ApplicationUserController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<ApplicationUser>> findAllUsers(){
+        System.out.println("GET /users");
         return new ResponseEntity<List<ApplicationUser>>(userRepository.findAll(), HttpStatus.OK);
     }
 
