@@ -640,7 +640,7 @@
                         },
                         success: function (data) {
                             $.each(data, function (j, user) {
-                                self.users.push({
+                                usersViewModel.users.push({
                                     id: ko.observable(user.id),
                                     username: ko.observable(user.username),
                                     password: ko.observable(user.password),
@@ -744,6 +744,7 @@
         var self = this;
 
         self.users = ko.observableArray();
+
         /*
         $.get("http://localhost:8080/users", function(data) {
             $.each(data, function(i, node) {
@@ -812,7 +813,7 @@
                     xhr.setRequestHeader("Authorization", sessionStorage.authKey);
                 },
                 success: function(result) {
-                    self.users()[i].username(newmuser.username);
+                    self.users()[i].username(newuser.username);
                     self.users()[i].password(newuser.password);
                 },
                 error: function(request,msg,error) {
