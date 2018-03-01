@@ -33,19 +33,21 @@ public class ApplicationUserController {
 
 
     // code for adding user
-    @RequestMapping(value = "/", method= RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        ApplicationUser user = mapper.readValue(json, ApplicationUser.class);
+
+    @PostMapping("/")
+    public void createUser(@RequestBody ApplicationUser user)  {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
+        System.out.println("POST /users");
+
     }
 
     // code for deleting user
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Boolean> deleteUser(@PathVariable("id") String id){
+        System.out.println("DELETE /users");
+        System.out.println("Id: " + id);
         userRepository.delete(id);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
@@ -98,6 +100,7 @@ public class ApplicationUserController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<ApplicationUser>> findAllUsers(){
+        System.out.println("GET /users");
         return new ResponseEntity<List<ApplicationUser>>(userRepository.findAll(), HttpStatus.OK);
     }
 

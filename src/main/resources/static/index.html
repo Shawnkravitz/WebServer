@@ -190,6 +190,24 @@
     </table>
     <button data-bind="click: beginAdd" class="btn">Add Monitor</button>
 </div>
+<div id="user" class="container">
+
+    <table class="table table-striped">
+        <tr><td style="width: 1px;"></td><td><b>Users</b></td><td><b>Options</b></td></tr>
+        <!-- ko foreach: users -->
+        <tr>
+            <td><p><b data-bind="text: username"></b></p></td>
+            <td>
+                <span>
+                <button data-bind="click: $parent.beginEditUser" class="btn">Edit</button>
+                <button data-bind="click: $parent.removeUser" class="btn">Remove</button>
+                </span>
+            </td>
+        </tr>
+        <!-- /ko -->
+    </table>
+    <button data-bind="click: beginAddUser" class="btn">Add User</button>
+</div>
 <div id="add" class="modal" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
@@ -219,6 +237,32 @@
     </div>
     <div class="modal-footer">
         <button data-bind="click: addMonitor" class="btn btn-primary">Add Monitor</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+<div id="adduser" class="modal" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="adduserDialogLabel">Add User</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="addUsername">Username</label>
+                <div class="controls">
+                    <input data-bind="value: username" type="text" id="addUsername" placeholder="Username" style="width: 300px;">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="addPassword">Password</label>
+                <div class="controls">
+                    <input data-bind="value: password" type="text" id="addPassword" placeholder="Password" style="width: 300px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: addUser" class="btn btn-primary">Add User</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
@@ -257,6 +301,32 @@
     </div>
     <div class="modal-footer">
         <button data-bind="click: editMonitor" class="btn btn-primary">Edit Monitor</button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+</div>
+<div id="edituser" class="modal" tabindex="=1" role="dialog" aria-labelledby="edituserDialogLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="edituserDialogLabel">Edit User</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="editUsername">Username</label>
+                <div class="controls">
+                    <input data-bind="value: username" type="text" id="editUsername" placeholder="Username" style="width: 300px;">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="editPassword">New Password</label>
+                <div class="controls">
+                    <input data-bind="value: password" type="text" id="editPassword" placeholder="Password" style="width: 300px;">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button data-bind="click: editUser" class="btn btn-primary">Edit User</button>
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     </div>
 </div>
@@ -537,7 +607,6 @@
                 data: JSON.stringify(myData),
                 contentType: 'application/json',
                 success: function(result, status, xhr) {
-                    //jwtAuthToken =  xhr.getResponseHeader('Authorization');
                     tokenSuccess(xhr.getResponseHeader('Authorization'));
                     $.ajax({
                         url: myServerURL + '/nodes/',
@@ -558,6 +627,23 @@
                                     name: ko.observable(node.name),
                                     state: ko.observable(node.state),
                                     description: ko.observable(node.description)
+                                });
+                            });
+                        }
+                    });
+                    $.ajax({
+                        url: myServerURL + '/users/',
+                        method: 'GET',
+                        contentType: 'application/json',
+                        beforeSend: function (xhr) {   //Include the bearer token in header
+                            xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+                        },
+                        success: function (data) {
+                            $.each(data, function (j, user) {
+                                usersViewModel.users.push({
+                                    id: ko.observable(user.id),
+                                    username: ko.observable(user.username),
+                                    password: ko.observable(user.password),
                                 });
                             });
                         }
@@ -654,17 +740,166 @@
         sessionStorage.authKey = response;
     }
 
+    function UsersViewModel() {
+        var self = this;
+
+        self.users = ko.observableArray();
+
+        /*
+        $.get("http://localhost:8080/users", function(data) {
+            $.each(data, function(i, node) {
+                self.users.push({
+                    id: ko.observable(node.id),
+                    username: ko.observable(node.username),
+                    password: ko.observable(node.password)
+                });
+            });
+
+        });*/
+
+        self.useradd = function(user){
+            var myData = {
+                'username': user.username,
+                'password': user.password
+            };
+            $.ajax({
+                url: myServerURL + '/users/',
+                method: 'POST',
+                data: JSON.stringify(myData),
+                contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+                },
+                success: function(result) {
+                    self.users.push({
+                        id : ko.observable(result),
+                        username: ko.observable(user.username),
+                        password: ko.observable(user.password),
+                    });
+
+                },
+                error: function(request,msg,error) {
+                    alert(msg);
+                }
+            });
+        }
+
+
+        self.beginAddUser = function() {
+            $('#adduser').modal('show');
+        }
+
+        self.beginEditUser = function(user) {
+            editUserViewModel.setUser(user);
+            $('#edituser').modal('show');
+        }
+
+        self.useredit = function(user, newuser) {
+            self.updateUser(user, newuser);
+        }
+
+        self.updateUser = function(user, newuser) {
+            var i = self.users.indexOf(user);
+            var myData = {
+                'username': newuser.username,
+                'password': newuser.password,
+            };
+            $.ajax({
+                url: myServerURL + '/users/' + user.id(),
+                method: 'PUT',
+                data: JSON.stringify(myData),
+                contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+                },
+                success: function(result) {
+                    self.users()[i].username(newuser.username);
+                    self.users()[i].password(newuser.password);
+                },
+                error: function(request,msg,error) {
+                    alert(msg);
+                }
+            });
+        }
+        self.removeUser = function(user) {
+            var i = user.id();
+            $.ajax({
+                url: myServerURL + '/users/' + i,
+                method: 'DELETE',
+                contentType: 'application/json',
+                beforeSend: function (xhr) {   //Include the bearer token in header
+                    xhr.setRequestHeader("Authorization", sessionStorage.authKey);
+                },
+                success: function(result) {
+                    self.users.remove(user);
+                },
+                error: function(request,msg,error) {
+                    alert(msg);
+                }
+            });
+
+        }
+    }
+
+    function AddUserViewModel() {
+        var self = this;
+        self.id = ko.observable();
+        self.username = ko.observable();
+        self.password = ko.observable();
+
+        self.addUser = function() {
+            $('#adduser').modal('hide');
+            usersViewModel.useradd({
+                id: self.id(),
+                username: self.username(),
+                password: self.password(),
+            });
+            self.id("");
+            self.username("");
+            self.password("");
+        }
+    }
+
+    function EditUserViewModel() {
+        var self = this;
+        self.id = ko.observable();
+        self.username = ko.observable();
+        self.password = ko.observable();
+
+        self.editUser = function() {
+            $('#edituser').modal('hide');
+            usersViewModel.useredit(self.user, {
+                id: self.id(),
+                username: self.username(),
+                password: self.password(),
+            });
+        }
+
+        self.setUser = function(user) {
+            self.user = user;
+            self.id(user.id());
+            self.username(user.username());
+            self.password(user.password());
+        }
+
+    }
+
     var monitorsViewModel = new MonitorsViewModel();
     var addMonitorsViewModel = new AddMonitorViewModel();
     var editMonitorViewModel = new EditMonitorViewModel();
     var loginViewModel = new LoginViewModel();
     var signupViewModel = new SignupViewModel();
+    var usersViewModel = new UsersViewModel();
+    var addUsersViewModel = new AddUserViewModel();
+    var editUserViewModel = new EditUserViewModel();
     ko.applyBindings(monitorsViewModel, $('#main')[0]);
     ko.applyBindings(addMonitorsViewModel, $('#add')[0]);
     ko.applyBindings(editMonitorViewModel, $('#edit')[0]);
     ko.applyBindings(loginViewModel, $('#login')[0]);
     ko.applyBindings(signupViewModel, $('#signup')[0]);
-
+    ko.applyBindings(usersViewModel, $('#user')[0]);
+    ko.applyBindings(addUsersViewModel, $('#adduser')[0]);
+    ko.applyBindings(editUserViewModel, $('#edituser')[0]);
 
 
 </script>
