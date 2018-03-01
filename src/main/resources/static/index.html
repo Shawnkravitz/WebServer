@@ -196,7 +196,7 @@
         <tr><td style="width: 1px;"></td><td><b>Users</b></td><td><b>Options</b></td></tr>
         <!-- ko foreach: users -->
         <tr>
-            <td><p><b data-bind="text: username"></b></p><p data-bind="text: password"></p></td>
+            <td><p><b data-bind="text: username"></b></p></td>
             <td>
                 <span>
                 <button data-bind="click: $parent.beginEditUser" class="btn">Edit</button>
@@ -318,7 +318,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="editPassword">Password</label>
+                <label class="control-label" for="editPassword">New Password</label>
                 <div class="controls">
                     <input data-bind="value: password" type="text" id="editPassword" placeholder="Password" style="width: 300px;">
                 </div>
@@ -852,7 +852,7 @@
             usersViewModel.useradd({
                 id: self.id(),
                 username: self.username(),
-                passsword: self.password(),
+                password: self.password(),
             });
             self.id("");
             self.username("");
@@ -871,7 +871,7 @@
             usersViewModel.useredit(self.user, {
                 id: self.id(),
                 username: self.username(),
-                password: self.password() ,
+                password: self.password(),
             });
         }
 

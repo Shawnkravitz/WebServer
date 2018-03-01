@@ -33,17 +33,13 @@ public class ApplicationUserController {
 
 
     // code for adding user
-    @RequestMapping(value = "/", method= RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
 
-        System.out.println("POST /users");
-        System.out.println("Payload: " + json);
-
-        ApplicationUser user = mapper.readValue(json, ApplicationUser.class);
+    @PostMapping("/")
+    public void createUser(@RequestBody ApplicationUser user)  {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
+        System.out.println("POST /users");
+
     }
 
     // code for deleting user
