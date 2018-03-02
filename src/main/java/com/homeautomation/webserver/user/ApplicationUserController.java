@@ -69,7 +69,7 @@ public class ApplicationUserController {
         }
 
         ApplicationUser userToUpdate = userRepository.findOne(id);
-        userToUpdate.setPassword(password);
+        userToUpdate.setPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(userToUpdate);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
