@@ -330,22 +330,6 @@
         var self = this;
 
         self.monitors = ko.observableArray();
-        /*
-        $.get(myServerURL + "/nodes", function(data) {
-            $.each(data, function(i, node) {
-                if(node.state==='false'){
-                    node.state=false;
-                }else{
-                    node.state=true;
-                }
-                self.monitors.push({
-                    id: ko.observable(node.id),
-                    name: ko.observable(node.name),
-                    state: ko.observable(node.state),
-                    description: ko.observable(node.description)
-                });
-            });
-        });*/
 
         self.beginAdd = function() {
             $('#add').modal('show');

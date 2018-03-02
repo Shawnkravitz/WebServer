@@ -25,6 +25,7 @@ public class ApplicationUserController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    // creates users from login dialogue
     @PostMapping("/sign-up")
     public void signUp(@RequestBody ApplicationUser user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -32,7 +33,7 @@ public class ApplicationUserController {
     }
 
 
-    // code for adding user
+    // code for adding user from user console
     @RequestMapping(value = "/", method= RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
@@ -100,6 +101,5 @@ public class ApplicationUserController {
     public ResponseEntity<List<ApplicationUser>> findAllUsers(){
         return new ResponseEntity<List<ApplicationUser>>(userRepository.findAll(), HttpStatus.OK);
     }
-
 
 }

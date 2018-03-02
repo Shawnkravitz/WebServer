@@ -18,6 +18,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
+/*
+ * This is the main node controller for the program. The base url is /nodes, and the HTTP methods help differentiate
+ * which method should be executed.
+ */
 @RestController
 @RequestMapping("/nodes")
 public class NodeController {
@@ -32,7 +37,7 @@ public class NodeController {
 
     private static final Logger logger = LogManager.getLogger(NodeController.class);
 
-    // method for creating a node (create)
+    // method for creating a node. This method returns the dabatase id of the node.
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> createNodeTest(@RequestBody String json) throws IOException {
@@ -50,7 +55,7 @@ public class NodeController {
         return new ResponseEntity<String>(node.getID(), HttpStatus.OK);
     }
 
-    // method for retrieving all nodes (read)
+    // method for retrieving all nodes. This method returns the dabatase id of the node.
     @RequestMapping(value = "/", method = RequestMethod.GET )
     @ResponseBody
     public ResponseEntity<List<Node>> findAllNodes(){
@@ -92,15 +97,18 @@ public class NodeController {
             }
         }
 
+        // extract fields from array
         name = fieldArray[0];
         description = fieldArray[1];
         state = fieldArray[2];
 
+        // update array
         Node nodeToUpdate = repository.findOne(id);
         nodeToUpdate.setState(state);
         nodeToUpdate.setName(name);
         nodeToUpdate.setDescription(description);
 
+        // save node to database
         repository.save(nodeToUpdate);
         // Log what was saved to the DB
         logger.info("Payload saved to DB as: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nodeToUpdate));
