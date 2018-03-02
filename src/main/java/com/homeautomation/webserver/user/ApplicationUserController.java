@@ -26,19 +26,21 @@ public class ApplicationUserController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody ApplicationUser user) {
+    public ResponseEntity<String> signUp(@RequestBody ApplicationUser user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
     }
 
 
     // code for adding user
 
     @PostMapping("/")
-    public void createUser(@RequestBody ApplicationUser user)  {
+    public ResponseEntity<String> createUser(@RequestBody ApplicationUser user)  {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         System.out.println("POST /users");
+        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
 
     }
 
