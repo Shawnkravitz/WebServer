@@ -132,7 +132,7 @@
         <ul id="navmenu" class="nav navbar-nav"
             data-bind="template: { name: 'menuTmpl', foreach: navmenu }">
         </ul>
-        <h5 align="right"><b>Administrator</b></h5>
+        <h5 align="right"><b id="uname"></b></h5>
     </div>
 
 </div>
@@ -154,7 +154,7 @@
     <li data-bind="visible: rootItems() ? false : true, css: { 'dropdown-submenu': children().length > 0 }">
         <a href="#" data-bind="text: name, visible: children().length < 1"></a>
 
-        <a href="#" class="dropdown-toggle" data-bind="visible: children().length > 0"
+        <a href="#" class="dropdown-toggle" data-bind="click: monView, visible: children().length > 0"
            data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
             <span data-bind="text: name"></span>
         </a>
@@ -163,7 +163,8 @@
     </li>
 
 </script>
-
+<button data-bind="click: monView" class="btn">Monitor View</button>
+<button data-bind="click: userView" class="btn">User View</button>
 <div id="main" class="container">
 
     <table class="table table-striped">
@@ -196,6 +197,7 @@
         <tr><td style="width: 1px;"></td><td><b>Users</b></td><td><b>Options</b></td></tr>
         <!-- ko foreach: users -->
         <tr>
+            <td></td>
             <td><p><b data-bind="text: username"></b></p></td>
             <td>
                 <span>
@@ -395,27 +397,18 @@
 
 <script>
     const myServerURL = "http://localhost:8080";
-
+    function monView() {
+        document.getElementById('main').style.display = "block";
+        document.getElementById('user').style.display = "none";
+    }
+    function userView() {
+        document.getElementById('user').style.display = "block";
+        document.getElementById('main').style.display = "none";
+    }
     function MonitorsViewModel() {
         var self = this;
 
         self.monitors = ko.observableArray();
-        /*
-        $.get(myServerURL + "/nodes", function(data) {
-            $.each(data, function(i, node) {
-                if(node.state==='false'){
-                    node.state=false;
-                }else{
-                    node.state=true;
-                }
-                self.monitors.push({
-                    id: ko.observable(node.id),
-                    name: ko.observable(node.name),
-                    state: ko.observable(node.state),
-                    description: ko.observable(node.description)
-                });
-            });
-        });*/
 
         self.beginAdd = function() {
             $('#add').modal('show');
@@ -499,7 +492,7 @@
         }
 
         self.remove = function(monitor) {
-            //var i = self.monitors.indexOf(monitor);
+
             var i = monitor.id();
             $.ajax({
                 url: myServerURL + '/nodes/' + i,
@@ -648,6 +641,8 @@
                             });
                         }
                     });
+                    document.getElementById('uname').innerHTML = username;
+                    monView();
                 },
                 error: function(request,msg,error) {
                     alert("Login failed");
@@ -744,18 +739,6 @@
         var self = this;
 
         self.users = ko.observableArray();
-
-        /*
-        $.get("http://localhost:8080/users", function(data) {
-            $.each(data, function(i, node) {
-                self.users.push({
-                    id: ko.observable(node.id),
-                    username: ko.observable(node.username),
-                    password: ko.observable(node.password)
-                });
-            });
-
-        });*/
 
         self.useradd = function(user){
             var myData = {
