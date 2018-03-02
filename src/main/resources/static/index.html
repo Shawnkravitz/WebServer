@@ -127,14 +127,6 @@
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"></button>
         <a class="navbar-brand" href="#">Home Automation Software</a>
     </div>
-
-    <div class="navbar-collapse collapse">
-        <ul id="navmenu" class="nav navbar-nav"
-            data-bind="template: { name: 'menuTmpl', foreach: navmenu }">
-        </ul>
-        <h5 align="right"><b id="uname"></b></h5>
-    </div>
-
 </div>
 
 <script id="menuTmpl" type="text/html">
@@ -161,10 +153,11 @@
 
         <ul class="dropdown-menu" data-bind="template: { name: 'menuTmpl', foreach: children }"></ul>
     </li>
-
 </script>
+
 <button data-bind="click: monView" class="btn">Monitor View</button>
 <button data-bind="click: userView" class="btn">User View</button>
+<button data-bind="click: logout" class="btn">Log Out</button>
 <div id="main" class="container">
 
     <table class="table table-striped">
@@ -401,9 +394,13 @@
         document.getElementById('main').style.display = "block";
         document.getElementById('user').style.display = "none";
     }
+    monView();
     function userView() {
         document.getElementById('user').style.display = "block";
         document.getElementById('main').style.display = "none";
+    }
+    function logout(){
+        window.location.reload(true);
     }
     function MonitorsViewModel() {
         var self = this;
@@ -646,13 +643,13 @@
                 },
                 error: function(request,msg,error) {
                     alert("Login failed");
+                    self.beginLogin();
                 }
             });
         }
 
         self.beginLogin();
     }
-
     function AddMonitorViewModel() {
         var self = this;
         self.id = ko.observable();
