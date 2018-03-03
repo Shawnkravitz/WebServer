@@ -20,8 +20,9 @@ import org.apache.logging.log4j.Logger;
 
 
 /*
- * This is the main node controller for the program. The base url is /nodes, and the HTTP methods help differentiate
- * which method should be executed.
+ * This is the main node controller for the program. The base url is /nodes, and the HTTP methods and URL parameters
+ * help differentiate which method should be executed. These methods interact with the MongoDB NodeRepository to
+ * select, store, and edit database entries.
  */
 @RestController
 @RequestMapping("/nodes")
@@ -31,10 +32,7 @@ public class NodeController {
     @Autowired
     private NodeRepository repository;
 
-    // import user repository
-    @Autowired
-    private ApplicationUserRepository userRepository;
-
+    // used for server logging
     private static final Logger logger = LogManager.getLogger(NodeController.class);
 
     // method for creating a node. This method returns the dabatase id of the node.
@@ -92,7 +90,6 @@ public class NodeController {
             JsonToken jsonToken = parser.nextToken();
             if (JsonToken.VALUE_STRING.equals(jsonToken)){
                 fieldArray[index] = parser.getValueAsString();
-                //System.out.println(fieldArray[index]);
                 index++;
             }
         }
@@ -110,6 +107,7 @@ public class NodeController {
 
         // save node to database
         repository.save(nodeToUpdate);
+
         // Log what was saved to the DB
         logger.info("Payload saved to DB as: " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(nodeToUpdate));
         return new ResponseEntity<Node>(repository.findOne(id), HttpStatus.OK);
@@ -123,5 +121,4 @@ public class NodeController {
         repository.delete(id);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
-    
 }
