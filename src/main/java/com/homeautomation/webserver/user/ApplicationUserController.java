@@ -25,6 +25,7 @@ public class ApplicationUserController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    // creates users from login dialogue
     @PostMapping("/sign-up")
     public ResponseEntity<String> signUp(@RequestBody ApplicationUser user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -33,8 +34,8 @@ public class ApplicationUserController {
     }
 
 
-    // code for adding user
 
+    // code for adding user
     @PostMapping("/")
     public ResponseEntity<String> createUser(@RequestBody ApplicationUser user)  {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -108,3 +109,4 @@ public class ApplicationUserController {
 
 
 }
+

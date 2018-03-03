@@ -14,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static com.homeautomation.webserver.security.SecurityConstants.SIGN_UP_URL;
 
-
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -44,15 +43,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
 
     }
-
-    /*
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        //auth
-                //.inMemoryAuthentication()
-                //.withUser("admin").password("admin").roles("ADMIN")
-                //.and().withUser("user").password("user").roles("USER");;
-        auth.userDetailsService(userDetailsService);
-    }*/
 }
 
