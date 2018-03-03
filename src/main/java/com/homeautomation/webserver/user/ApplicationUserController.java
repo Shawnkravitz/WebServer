@@ -27,26 +27,30 @@ public class ApplicationUserController {
 
     // creates users from login dialogue
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody ApplicationUser user) {
+    public ResponseEntity<String> signUp(@RequestBody ApplicationUser user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
     }
 
 
-    // code for adding user from user console
-    @RequestMapping(value = "/", method= RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<String> createUser(@RequestBody String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        ApplicationUser user = mapper.readValue(json, ApplicationUser.class);
+
+    // code for adding user
+    @PostMapping("/")
+    public ResponseEntity<String> createUser(@RequestBody ApplicationUser user)  {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        System.out.println("POST /users");
         return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
+
     }
 
     // code for deleting user
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Boolean> deleteUser(@PathVariable("id") String id){
+        System.out.println("DELETE /users");
+        System.out.println("Id: " + id);
         userRepository.delete(id);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
@@ -68,7 +72,7 @@ public class ApplicationUserController {
         }
 
         ApplicationUser userToUpdate = userRepository.findOne(id);
-        userToUpdate.setPassword(password);
+        userToUpdate.setPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(userToUpdate);
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
@@ -99,7 +103,10 @@ public class ApplicationUserController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<List<ApplicationUser>> findAllUsers(){
+        System.out.println("GET /users");
         return new ResponseEntity<List<ApplicationUser>>(userRepository.findAll(), HttpStatus.OK);
     }
 
+
 }
+
